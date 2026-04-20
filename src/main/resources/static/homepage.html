@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <title>NaukriSathi - Placement Portal</title>
+  <link rel="stylesheet" href="homepage.css">
+  <style>
+    .filter-option input[type='checkbox']:checked + span { font-weight: 700; color: #3C3E4A; }
+    .filter-option { display: flex; align-items: center; gap: 8px; padding: 6px 4px; cursor: pointer; border-radius: 4px; transition: background 0.15s; }
+    .filter-option:hover { background: rgba(60,62,74,0.07); }
+    .filter-option input[type='checkbox']:checked + span::before { content: '✓ '; color: #3C3E4A; }
+    #filterBadge { display: none; background: #3C3E4A; color: white; border-radius: 99px; padding: 1px 8px; font-size: 12px; margin-left: 8px; vertical-align: middle; }
+    #clearFilters { display: none; margin-top: 12px; width: 100%; padding: 7px; font-size: 13px; background: transparent; border: 1px solid #3C3E4A; color: #3C3E4A; border-radius: 4px; cursor: pointer; transition: all 0.2s; }
+    #clearFilters:hover { background: #3C3E4A; color: white; }
+    #noResults { display: none; grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: #666; }
+    #noResults h3 { margin-bottom: 8px; }
+    #resultCount { font-size: 13px; color: #888; margin-top: 4px; }
+
+  /* ── Toast Notifications ── */
+  #toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+    max-width: 360px;
+    width: calc(100vw - 40px);
+  }
+  .toast {
+    pointer-events: all;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px 14px 14px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(15, 23, 42, 0.09);
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 12px 32px -4px rgba(0,0,0,0.13), 0 0 0 1px rgba(255,255,255,0.6) inset;
+    transform: translateX(110%);
+    opacity: 0;
+    transition: transform 0.38s cubic-bezier(0.34,1.56,0.64,1), opacity 0.25s ease;
+    overflow: hidden;
+    position: relative;
+    min-width: 0;
+  }
+  .toast.show { transform: translateX(0); opacity: 1; }
+  .toast.hide { transform: translateX(110%); opacity: 0; transition: transform 0.28s ease-in, opacity 0.18s ease-in; }
+  .toast-icon { flex-shrink:0; width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:800; }
+  .toast-body { flex:1; min-width:0; }
+  .toast-title { font-size:13px; font-weight:700; letter-spacing:-0.01em; margin-bottom:2px; line-height:1.3; }
+  .toast-msg { font-size:12px; font-weight:400; color:#64748b; line-height:1.5; word-break:break-word; }
+  .toast-close { flex-shrink:0; background:none; border:none; cursor:pointer; color:#94a3b8; padding:2px; line-height:1; font-size:19px; transition:color 0.15s; align-self:flex-start; margin-top:-2px; }
+  .toast-close:hover { color:#475569; }
+  .toast-progress { position:absolute; bottom:0; left:0; height:3px; border-radius:0 0 12px 12px; animation:toastProgress var(--toast-dur,4s) linear forwards; }
+  @keyframes toastProgress { from{width:100%} to{width:0%} }
+  .toast-success .toast-icon { background:#dcfce7; color:#16a34a; }
+  .toast-success .toast-title { color:#15803d; }
+  .toast-success .toast-progress { background:linear-gradient(90deg,#16a34a,#4ade80); }
+  .toast-error   .toast-icon { background:#fee2e2; color:#dc2626; }
+  .toast-error   .toast-title { color:#b91c1c; }
+  .toast-error   .toast-progress { background:linear-gradient(90deg,#dc2626,#f87171); }
+  .toast-warning .toast-icon { background:#fef3c7; color:#d97706; }
+  .toast-warning .toast-title { color:#b45309; }
+  .toast-warning .toast-progress { background:linear-gradient(90deg,#d97706,#fbbf24); }
+  .toast-info    .toast-icon { background:#e0e7ff; color:#4f46e5; }
+  .toast-info    .toast-title { color:#4338ca; }
+  .toast-info    .toast-progress { background:linear-gradient(90deg,#4f46e5,#06b6d4); }
+
+  </style>
+</head>
+<body>
+<div id="toast-container"></div>
+
+
+<nav class="navbar">
+  <div class="navbar-left">
+    <a href="homepage.html" style="text-decoration: none; color: inherit;">
+      <div class="logo">NaukriSathi</div>
+    </a>
+  </div>
+  <ul class="navbar-center">
+    <li><a href="homepage.html" class="active">Home</a></li>
+    <li><a href="profile.html">Profile</a></li>
+    <li><a href="appliedJobs.html">Applied Jobs</a></li>
+    <li><a href="aiAssistance.html">Margdarshak AI Assistant</a></li>
+  </ul>
+  <div class="navbar-right">
+    <button class="btn-outline">Sign Out</button>
+  </div>
+</nav>
+
+<section class="hero">
+  <h1>Your Career. <span>Accelerated.</span></h1>
+  <p>Apply to premier internships and full-time roles from top technology companies shaping the future.</p>
+  <div class="hero-actions">
+    <button class="btn-primary" onclick="document.querySelector('.jobs').scrollIntoView({behavior:'smooth'})">View Openings</button>
+    <a href="profile.html" class="btn-outline">Update Profile</a>
+  </div>
+</section>
+
+<div class="recruiters">
+  <div class="marquee">
+    <div class="marquee-content">
+      <img src="microsoft-logo.png" alt="Microsoft">
+      <img src="aws-logo.png" alt="AWS">
+      <img src="google-logo.png" alt="Google">
+      <img src="apple-logo.png" alt="Apple">
+      <img src="ibm-logo.png" alt="IBM">
+      <img src="meta-logo.png" alt="Meta">
+      <img src="oracle-logo.png" alt="Oracle">
+    </div>
+    <div class="marquee-content" aria-hidden="true">
+      <img src="microsoft-logo.png" alt="Microsoft">
+      <img src="aws-logo.png" alt="AWS">
+      <img src="google-logo.png" alt="Google">
+      <img src="apple-logo.png" alt="Apple">
+      <img src="ibm-logo.png" alt="IBM">
+      <img src="meta-logo.png" alt="Meta">
+      <img src="oracle-logo.png" alt="Oracle">
+    </div>
+  </div>
+</div>
+
+<div class="content">
+  <aside class="filters">
+    <h3>Filter by Category <span id="filterBadge">0</span></h3>
+    <label class="filter-option"><input type="checkbox" value="Programming">     <span>Programming</span></label>
+    <label class="filter-option"><input type="checkbox" value="Data Science">    <span>Data Science</span></label>
+    <label class="filter-option"><input type="checkbox" value="Designing">       <span>Designing</span></label>
+    <label class="filter-option"><input type="checkbox" value="Networking">      <span>Networking</span></label>
+    <label class="filter-option"><input type="checkbox" value="Management">      <span>Management</span></label>
+    <label class="filter-option"><input type="checkbox" value="Cyber Security">  <span>Cyber Security</span></label>
+    <label class="filter-option"><input type="checkbox" value="UI and UX">       <span>UI and UX</span></label>
+    <label class="filter-option"><input type="checkbox" value="Cloud Computing"> <span>Cloud Computing</span></label>
+    <label class="filter-option"><input type="checkbox" value="DevOps">          <span>DevOps</span></label>
+    <label class="filter-option"><input type="checkbox" value="Software">        <span>Software</span></label>
+    <button id="clearFilters" onclick="clearAllFilters()">✕ Clear Filters</button>
+  </aside>
+
+  <section class="jobs">
+    <div class="jobs-header">
+      <h2>Latest Openings</h2>
+      <p>Explore recently added placements perfectly suited for your profile.</p>
+      <p id="resultCount"></p>
+    </div>
+    <div class="job-grid" id="jobGrid">
+      <div id="noResults">
+        <h3>No jobs found</h3>
+        <p>No openings match the selected categories. Try different filters.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer class="footer">
+  <div class="footer-content">
+    <div>
+      <div class="logo">NaukriSathi</div>
+      <p>Connecting remarkable students with extraordinary career opportunities globally.</p>
+    </div>
+    <div>
+      <h4>Support &amp; Policies</h4>
+      <div class="footer-links">
+        <a href="#">Home</a><a href="#">About Us</a><a href="#">Privacy Policy</a><a href="#">Terms of Service</a>
+      </div>
+    </div>
+    <div>
+      <h4>Contact Us</h4>
+      <div class="footer-links">
+        <p>Email: support@naukrisathi.com</p>
+        <p>Phone: +91-123-456-7890</p>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">&copy; 2026 NaukriSathi</div>
+</footer>
+
+<div id="aiLoader" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.75); backdrop-filter:blur(8px); justify-content:center; align-items:center; z-index:9999;">
+  <div class="ai-loader-card">
+    <div class="ai-loader-header"><div class="ai-dot"></div> AI Scoring Is Working...</div>
+    <div class="spinner"></div>
+    <div id="aiMessage">Analysing your profile</div>
+    <div class="progress-bar"><div class="progress-fill"></div></div>
+  </div>
+</div>
+
+<script>
+  const jobGrid     = document.getElementById("jobGrid");
+  const noResults   = document.getElementById("noResults");
+  const resultCount = document.getElementById("resultCount");
+  const filterBadge = document.getElementById("filterBadge");
+  const clearBtn    = document.getElementById("clearFilters");
+  const checkboxes  = document.querySelectorAll(".filters input[type='checkbox']");
+  let allJobs = [];
+
+  async function loadJobs() {
+    try {
+      const userId = localStorage.getItem("userId");
+      const response = await fetch(`http://localhost:8084/jobs/active/student/${userId}`);
+      allJobs = await response.json();
+      applyFilters();
+    } catch (err) {
+      console.error("Error loading jobs:", err);
+      toast("Failed to load jobs. Make sure the server is running.", "error");
+      jobGrid.innerHTML = `<p style="color:#c0392b;padding:20px;">Failed to load jobs. Make sure the server is running.</p>`;
+    }
+  }
+
+  function renderJobs(jobList) {
+    const existingCards = jobGrid.querySelectorAll(".job-card");
+    existingCards.forEach(c => c.remove());
+    if (jobList.length === 0) {
+      noResults.style.display = "block";
+      resultCount.textContent  = "0 jobs found";
+      return;
+    }
+    noResults.style.display = "none";
+    resultCount.textContent  = `${jobList.length} job${jobList.length !== 1 ? 's' : ''} found`;
+    jobList.forEach((job, index) => {
+      const card = document.createElement("div");
+      card.className = "job-card";
+      card.style.opacity   = "0";
+      card.style.animation = `fadeUp 0.5s ${0.07 * index}s forwards cubic-bezier(0.16,1,0.3,1)`;
+      const shortDesc = job.jobDescription
+        ? job.jobDescription.replace(/\n/g, " ").split(" ").slice(0, 15).join(" ") + "..."
+        : "No description available.";
+      card.innerHTML = `
+        <div class="job-header">
+          <img src="${job.companyLogo}" alt="${job.companyName} logo">
+          <span class="job-category">${job.jobCategory || "General"}</span>
+        </div>
+        <h4>${job.jobTitle}</h4>
+        <p class="company-name">${job.companyName || "Company"}</p>
+        <p class="job-description">${shortDesc}</p>
+        <div class="job-actions">
+          <button class="btn-primary" onclick="applyJob(${job.id})">Apply Now</button>
+          <button class="btn-outline" onclick="openJobDetails(${job.id})">Learn More</button>
+        </div>
+      `;
+      jobGrid.appendChild(card);
+    });
+  }
+
+  function applyFilters() {
+    const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value.trim().toLowerCase());
+    const count = selected.length;
+    filterBadge.textContent  = count;
+    filterBadge.style.display = count > 0 ? "inline" : "none";
+    clearBtn.style.display    = count > 0 ? "block"  : "none";
+    if (count === 0) { renderJobs(allJobs); return; }
+    const filtered = allJobs.filter(job => selected.includes((job.jobCategory || "").trim().toLowerCase()));
+    renderJobs(filtered);
+  }
+
+  function clearAllFilters() {
+    checkboxes.forEach(cb => cb.checked = false);
+    applyFilters();
+  }
+
+  async function applyJob(jobId) {
+    const userId = localStorage.getItem("userId");
+    if (!userId) { toast("Please log in first.", "warning"); return; }
+    const loader = document.getElementById("aiLoader");
+    const aiMsg  = document.getElementById("aiMessage");
+    loader.style.display = "flex";
+    const messages = [
+      "Analysing your profile…",
+      "Matching skills with job requirements…",
+      "Running AI compatibility check…",
+      "Almost there, calculating your score…"
+    ];
+    let msgIndex = 0;
+    const msgInterval = setInterval(() => {
+      msgIndex = (msgIndex + 1) % messages.length;
+      aiMsg.textContent = messages[msgIndex];
+    }, 2500);
+    try {
+      const response = await fetch(
+        `http://localhost:8084/applications/apply?userId=${userId}&jobId=${jobId}`,
+        { method: "POST" }
+      );
+      const message = await response.text();
+      clearInterval(msgInterval);
+      loader.style.display = "none";
+      toast(message);
+    } catch (err) {
+      console.error("Apply error:", err);
+      clearInterval(msgInterval);
+      loader.style.display = "none";
+      toast("Could not apply. Server may be down.", "error");
+    }
+  }
+
+  checkboxes.forEach(cb => cb.addEventListener("change", applyFilters));
+  loadJobs();
+</script>
+<script>
+
+  /* ── Toast JS ── */
+  (function(){
+    var ICONS  = {success:'✓', error:'✕', warning:'⚠', info:'ℹ'};
+    var TITLES = {success:'Success', error:'Error', warning:'Warning', info:'Notice'};
+    function dismiss(el){
+      clearTimeout(el._tt);
+      el.classList.remove('show');
+      el.classList.add('hide');
+      setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);}, 320);
+    }
+    window.toast = function(message, type, duration){
+      message = (message||'').toString();
+      if(!type){
+        if(/\u274C|[Ee]rror|[Ff]ail(ed)?|[Ii]nvalid|[Ww]rong|[Dd]en(ied)?|down|[Cc]annot|not run/i.test(message)) type='error';
+        else if(/\u2705|\u1F389|[Ss]uccess(ful)?|[Vv]erif|[Aa]dded|[Ss]aved|[Dd]elet|[Uu]pdat|[Pp]lac|[Cc]reat/i.test(message)) type='success';
+        else if(/\u26A0|[Ww]arn|[Cc]aution/i.test(message)) type='warning';
+        else type='info';
+      }
+      duration = duration || (type==='error' ? 5500 : 4200);
+      var clean = message
+        .replace(/^[\u{274C}\u{2705}\u{26A0}\u{2139}\u{1F389}\u{1F525}\u{1F4A1}\u{1F916}\u{1F4CA}\u{1F9E0}\u{1F680}]+\s*/u,'')
+        .replace(/\n/g,'<br>');
+      var c = document.getElementById('toast-container');
+      if(!c) return;
+      var el = document.createElement('div');
+      el.className = 'toast toast-' + type;
+      el.style.setProperty('--toast-dur', duration+'ms');
+      el.innerHTML =
+        '<div class="toast-icon">'+ICONS[type]+'</div>'+
+        '<div class="toast-body">'+
+          '<div class="toast-title">'+TITLES[type]+'</div>'+
+          '<div class="toast-msg">'+clean+'</div>'+
+        '</div>'+
+        '<button class="toast-close" aria-label="Dismiss">\xd7</button>'+
+        '<div class="toast-progress"></div>';
+      c.appendChild(el);
+      requestAnimationFrame(function(){
+        requestAnimationFrame(function(){ el.classList.add('show'); });
+      });
+      el.querySelector('.toast-close').addEventListener('click', function(){ dismiss(el); });
+      el._tt = setTimeout(function(){ dismiss(el); }, duration);
+      el.addEventListener('mouseenter', function(){
+        clearTimeout(el._tt);
+        var p=el.querySelector('.toast-progress');
+        if(p) p.style.animationPlayState='paused';
+      });
+      el.addEventListener('mouseleave', function(){
+        var p=el.querySelector('.toast-progress');
+        if(p) p.style.animationPlayState='running';
+        el._tt=setTimeout(function(){ dismiss(el); }, 1800);
+      });
+    };
+  })();
+
+  function openJobDetails(jobId) {
+  sessionStorage.setItem("selectedJobId", jobId);
+  window.location.href = "jobDetails.html";
+}
+
+</script>
+
+<script src="auth.js"></script>
+</body>
+</html>

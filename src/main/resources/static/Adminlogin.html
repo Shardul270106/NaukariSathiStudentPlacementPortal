@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>NaukriSathi — Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        html,body{height:100%;font-family:'Inter',-apple-system,sans-serif;color:#0f172a;font-size:14px;-webkit-font-smoothing:antialiased;overflow:hidden}
+        body{background-color:#f8fafc;background-image:radial-gradient(at 0% 0%,hsla(240,100%,93%,1) 0,transparent 50%),radial-gradient(at 60% 0%,hsla(220,100%,93%,1) 0,transparent 50%),radial-gradient(at 100% 0%,hsla(270,100%,93%,1) 0,transparent 50%),radial-gradient(at 0% 100%,hsla(200,100%,92%,1) 0,transparent 50%),radial-gradient(at 100% 100%,hsla(250,100%,92%,1) 0,transparent 50%);background-attachment:fixed}
+        .orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;animation:orbDrift 12s ease-in-out infinite}
+        .orb1{width:500px;height:500px;top:-140px;left:-120px;background:radial-gradient(circle,rgba(99,102,241,.16),transparent 70%)}
+        .orb2{width:400px;height:400px;bottom:-100px;right:-80px;background:radial-gradient(circle,rgba(139,92,246,.16),transparent 70%);animation-delay:-6s}
+        .orb3{width:280px;height:280px;top:40%;left:40%;background:radial-gradient(circle,rgba(236,72,153,.09),transparent 70%);animation-delay:-10s}
+        @keyframes orbDrift{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(28px,-18px) scale(1.05)}66%{transform:translate(-18px,22px) scale(0.97)}}
+        .particles{position:fixed;inset:0;z-index:1;pointer-events:none}
+        .particle{position:absolute;border-radius:50%;opacity:0;animation:floatUp var(--d) var(--dl) infinite ease-in-out}
+        @keyframes floatUp{0%{opacity:0;transform:translateY(0) scale(.4)}20%{opacity:.45}80%{opacity:.15}100%{opacity:0;transform:translateY(-110vh) scale(1)}}
+        .scene{position:relative;z-index:2;display:flex;height:100vh;width:100vw;overflow:hidden}
+        .left-panel{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 50px;position:relative;overflow:hidden}
+        .brand{position:absolute;top:36px;left:44px;display:flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;font-weight:800;font-size:20px}
+        .brand-mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#6366f1 0%,#8b5cf6 100%);display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;font-weight:800;box-shadow:0 4px 14px rgba(99,102,241,.35)}
+        .brand-name{background:linear-gradient(135deg,#6366f1 0%,#8b5cf6 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .brand-badge{background:rgba(99,102,241,.1);color:#6366f1;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;font-family:'Inter',sans-serif;-webkit-text-fill-color:#6366f1;border:1px solid rgba(99,102,241,.25);letter-spacing:.04em}
+        .glow-line{position:absolute;height:1px;left:0;right:0;background:linear-gradient(90deg,transparent,rgba(99,102,241,.2),transparent);animation:glowPulse 4s ease-in-out infinite}
+        .glow-line:nth-child(2){top:28%;animation-delay:0s}.glow-line:nth-child(3){bottom:28%;animation-delay:-2s}
+        @keyframes glowPulse{0%,100%{opacity:.25;transform:scaleX(.5)}50%{opacity:.7;transform:scaleX(1)}}
+        .illo-wrap{width:400px;height:290px;perspective:900px;position:relative;animation:floatBob 6s ease-in-out infinite;margin-bottom:24px}
+        @keyframes floatBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+        .illo-inner{width:100%;height:100%;transform-style:preserve-3d;animation:isoPan 20s ease-in-out infinite}
+        @keyframes isoPan{0%,100%{transform:rotateX(18deg) rotateY(-12deg)}50%{transform:rotateX(16deg) rotateY(12deg)}}
+        .illo-svg{width:100%;height:100%}
+        .badge{position:absolute;background:rgba(255,255,255,0.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(99,102,241,.2);border-radius:40px;padding:7px 14px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:7px;white-space:nowrap;box-shadow:0 6px 20px rgba(0,0,0,.07);color:#0f172a}
+        .badge-dot{width:8px;height:8px;border-radius:50%}
+        .badge:nth-child(1){top:-8px;left:10px;animation:badgeBob 3.5s ease-in-out infinite}
+        .badge:nth-child(2){bottom:28px;right:0;animation:badgeBob 3.5s ease-in-out infinite;animation-delay:.8s}
+        .badge:nth-child(3){top:45%;left:-30px;animation:badgeBob 3.5s ease-in-out infinite;animation-delay:1.8s}
+        @keyframes badgeBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+        .tagline{text-align:center;max-width:380px}
+        .tagline h1{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;line-height:1.15;margin-bottom:10px;background:linear-gradient(135deg,#0f172a 0%,#6366f1 60%,#8b5cf6 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-0.03em}
+        .tagline p{font-size:13.5px;color:#475569;line-height:1.6}
+        .stat-row{display:flex;gap:12px;margin-top:18px}
+        .stat-pill{background:rgba(255,255,255,0.62);backdrop-filter:blur(10px);border:1px solid rgba(99,102,241,.18);border-radius:8px;padding:8px 14px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+        .stat-pill strong{display:block;font-size:15px;font-family:'Syne',sans-serif;background:linear-gradient(135deg,#6366f1 0%,#8b5cf6 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .stat-pill span{font-size:11px;color:#475569;font-weight:500}
+        .right-panel{width:460px;min-width:400px;display:flex;align-items:center;justify-content:center;padding:24px 36px;border-left:1px solid rgba(15,23,42,.08);background:rgba(255,255,255,0.42);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
+        .form-box{width:100%;max-width:360px;max-height:calc(100vh - 48px);overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:rgba(99,102,241,.2) transparent;padding-right:4px;animation:fadeUp .55s cubic-bezier(.22,1,.36,1) both}
+        .form-box::-webkit-scrollbar{width:4px}
+        .form-box::-webkit-scrollbar-thumb{background:rgba(99,102,241,.2);border-radius:2px}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+        .tab-track{display:flex;background:rgba(15,23,42,.04);border:1px solid rgba(15,23,42,.08);border-radius:10px;padding:4px;margin-bottom:20px;position:relative}
+        .tab-pill{position:absolute;top:4px;left:4px;height:calc(100% - 8px);width:calc(50% - 4px);background:linear-gradient(135deg,#6366f1 0%,#8b5cf6 100%);border-radius:7px;box-shadow:0 4px 14px rgba(99,102,241,.28);transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
+        .tab-pill.right{transform:translateX(100%)}
+        .tab{flex:1;text-align:center;padding:9px;cursor:pointer;font-weight:600;font-size:13px;color:#475569;transition:color .2s;border-radius:7px;position:relative;z-index:1;user-select:none}
+        .tab.active{color:#fff}
+        .form-hd{margin-bottom:16px}
+        .form-hd h2{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:-.03em;margin-bottom:2px;color:#0f172a}
+        .form-hd p{font-size:12px;color:#475569}
+        .fg{margin-bottom:10px}
+        .fg label{display:block;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#475569;margin-bottom:4px}
+        .iw{position:relative}
+        .iw svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:#475569;pointer-events:none;transition:color .2s}
+        .fg input{width:100%;padding:9px 11px 9px 33px;background:rgba(255,255,255,.72);border:1px solid rgba(15,23,42,.12);border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;color:#0f172a;outline:none;transition:border-color .2s,box-shadow .2s,background .2s}
+        .fg input::placeholder{color:#94a3b8}
+        .fg input:focus{border-color:#6366f1;background:rgba(99,102,241,.04);box-shadow:0 0 0 3px rgba(99,102,241,.12)}
+        .iw:focus-within svg{color:#6366f1}
+        .terms-row{display:flex;align-items:center;gap:8px;margin:10px 0 0;font-size:11px;color:#475569}
+        .terms-row input[type="checkbox"]{width:14px;height:14px;flex-shrink:0;accent-color:#6366f1;cursor:pointer}
+        .terms-row a{color:#6366f1;font-weight:500;text-decoration:none}
+        #sfWrap{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .42s cubic-bezier(.4,0,.2,1),opacity .3s ease}
+        #sfWrap.open{grid-template-rows:1fr;opacity:1}
+        #sfInner{overflow:hidden}
+        .fields-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+        .fields-grid .fg{margin-bottom:10px}
+        .fields-grid .fg.full{grid-column:1 / -1}
+        #otpSection{display:none;flex-direction:column;gap:7px;margin-top:5px}
+        .btn-primary{width:100%;padding:11px;background:linear-gradient(135deg,#6366f1 0%,#8b5cf6 100%);border:none;border-radius:8px;color:#fff;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(99,102,241,.32);transition:transform .15s,box-shadow .2s,opacity .2s;margin-top:12px;position:relative;overflow:hidden}
+        .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(99,102,241,.42)}
+        .btn-primary:active{transform:translateY(0)}
+        .btn-primary.loading{opacity:.7;pointer-events:none}
+        .btn-sec{width:100%;padding:10px;background:rgba(255,255,255,.8);border:1px solid rgba(99,102,241,.3);border-radius:8px;color:#6366f1;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:border-color .2s,background .2s;margin-top:4px}
+        .btn-sec:hover{border-color:#6366f1;background:rgba(99,102,241,.05)}
+        .spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spinA .7s linear infinite;vertical-align:middle;margin-right:6px}
+        @keyframes spinA{to{transform:rotate(360deg)}}
+        #toast-container{position:fixed;top:20px;right:20px;z-index:99999;display:flex;flex-direction:column;gap:10px;pointer-events:none;max-width:360px;width:calc(100vw - 40px)}
+        .toast{pointer-events:all;display:flex;align-items:flex-start;gap:12px;padding:14px 16px 14px 14px;border-radius:12px;background:rgba(255,255,255,.96);backdrop-filter:blur(24px);border:1px solid rgba(15,23,42,.09);box-shadow:0 4px 6px -1px rgba(0,0,0,.07),0 12px 32px -4px rgba(0,0,0,.13);transform:translateX(110%);opacity:0;transition:transform .38s cubic-bezier(.34,1.56,.64,1),opacity .25s ease;overflow:hidden;position:relative}
+        .toast.show{transform:translateX(0);opacity:1}
+        .toast.hide{transform:translateX(110%);opacity:0;transition:transform .28s ease-in,opacity .18s ease-in}
+        .toast-icon{flex-shrink:0;width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800}
+        .toast-body{flex:1;min-width:0}
+        .toast-title{font-size:13px;font-weight:700;letter-spacing:-0.01em;margin-bottom:2px;line-height:1.3}
+        .toast-msg{font-size:12px;font-weight:400;color:#64748b;line-height:1.5;word-break:break-word}
+        .toast-close{flex-shrink:0;background:none;border:none;cursor:pointer;color:#94a3b8;padding:2px;line-height:1;font-size:19px;transition:color .15s;align-self:flex-start;margin-top:-2px}
+        .toast-close:hover{color:#475569}
+        .toast-progress{position:absolute;bottom:0;left:0;height:3px;border-radius:0 0 12px 12px;animation:toastProgress var(--toast-dur,4s) linear forwards}
+        @keyframes toastProgress{from{width:100%}to{width:0%}}
+        .toast-success .toast-icon{background:#dcfce7;color:#16a34a}.toast-success .toast-title{color:#15803d}.toast-success .toast-progress{background:linear-gradient(90deg,#16a34a,#4ade80)}
+        .toast-error .toast-icon{background:#fee2e2;color:#dc2626}.toast-error .toast-title{color:#b91c1c}.toast-error .toast-progress{background:linear-gradient(90deg,#dc2626,#f87171)}
+        .toast-warning .toast-icon{background:#fef3c7;color:#d97706}.toast-warning .toast-title{color:#b45309}.toast-warning .toast-progress{background:linear-gradient(90deg,#d97706,#fbbf24)}
+        .toast-info .toast-icon{background:#ede9fe;color:#6366f1}.toast-info .toast-title{color:#4f46e5}.toast-info .toast-progress{background:linear-gradient(90deg,#6366f1,#8b5cf6)}
+        @media(max-width:860px){.left-panel{display:none}.right-panel{width:100%;min-width:unset;border:none}}
+
+        /* ═══════════════════════════════════════
+           DEV MODAL — hidden from regular users
+           Open with Ctrl + Shift + D
+        ═══════════════════════════════════════ */
+        #devOverlay{
+          position:fixed;inset:0;z-index:99998;
+          background:rgba(0,0,0,0.55);
+          backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+          display:flex;align-items:center;justify-content:center;
+          opacity:0;pointer-events:none;
+          transition:opacity .25s ease;
+        }
+        #devOverlay.open{opacity:1;pointer-events:all}
+        #devModal{
+          background:#0f172a;
+          border:1px solid rgba(99,102,241,.3);
+          border-radius:16px;
+          padding:30px 28px 24px;
+          width:360px;
+          box-shadow:0 24px 60px rgba(0,0,0,.5),0 0 0 1px rgba(99,102,241,.15);
+          transform:translateY(20px) scale(0.97);
+          transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+          position:relative;
+        }
+        #devOverlay.open #devModal{transform:translateY(0) scale(1)}
+        .dev-tag{
+          display:inline-flex;align-items:center;gap:6px;
+          background:rgba(99,102,241,.15);
+          border:1px solid rgba(99,102,241,.3);
+          border-radius:20px;padding:3px 10px;
+          font-size:10px;font-weight:700;letter-spacing:.08em;
+          color:#a5b4fc;text-transform:uppercase;margin-bottom:14px;
+        }
+        .dev-tag .blink{
+          width:6px;height:6px;border-radius:50%;background:#6366f1;
+          animation:blinkPulse 1.4s ease-in-out infinite;
+        }
+        @keyframes blinkPulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(99,102,241,.6)}50%{opacity:.4;box-shadow:0 0 0 5px rgba(99,102,241,0)}}
+        #devModal h3{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#f1f5f9;margin-bottom:4px;letter-spacing:-.03em}
+        #devModal p.dev-sub{font-size:12px;color:#64748b;margin-bottom:20px}
+        .dev-fg{margin-bottom:12px}
+        .dev-fg label{display:block;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#475569;margin-bottom:5px}
+        .dev-fg input{
+          width:100%;padding:9px 13px;
+          background:rgba(255,255,255,.06);
+          border:1px solid rgba(255,255,255,.1);
+          border-radius:8px;color:#f1f5f9;
+          font-family:'Inter',sans-serif;font-size:13px;outline:none;
+          transition:border-color .2s,box-shadow .2s;
+        }
+        .dev-fg input::placeholder{color:#475569}
+        .dev-fg input:focus{border-color:rgba(99,102,241,.6);box-shadow:0 0 0 3px rgba(99,102,241,.15)}
+        #devAddBtn{
+          width:100%;padding:11px;margin-top:4px;
+          background:linear-gradient(135deg,#6366f1,#8b5cf6);
+          border:none;border-radius:8px;
+          color:#fff;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;
+          cursor:pointer;
+          box-shadow:0 4px 16px rgba(99,102,241,.3);
+          transition:transform .15s,box-shadow .2s,opacity .2s;
+        }
+        #devAddBtn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(99,102,241,.45)}
+        #devAddBtn:active{transform:translateY(0)}
+        #devAddBtn.loading{opacity:.6;pointer-events:none}
+        #devCloseBtn{
+          position:absolute;top:14px;right:16px;
+          background:none;border:none;cursor:pointer;
+          color:#475569;font-size:20px;line-height:1;
+          transition:color .15s;padding:4px;
+        }
+        #devCloseBtn:hover{color:#f1f5f9}
+        .dev-hint{
+          margin-top:16px;
+          padding:10px 12px;
+          background:rgba(99,102,241,.07);
+          border-left:3px solid rgba(99,102,241,.5);
+          border-radius:0 6px 6px 0;
+          font-size:11px;color:#64748b;line-height:1.6;
+        }
+        .dev-hint code{color:#a5b4fc;font-family:'DM Mono',monospace;background:rgba(99,102,241,.12);padding:1px 5px;border-radius:3px;font-size:10.5px}
+        #devResult{margin-top:12px;font-size:12px;padding:9px 12px;border-radius:7px;display:none}
+        #devResult.ok{background:rgba(22,163,74,.12);border:1px solid rgba(22,163,74,.25);color:#4ade80}
+        #devResult.fail{background:rgba(220,38,38,.1);border:1px solid rgba(220,38,38,.2);color:#f87171}
+    </style>
+</head>
+<body>
+<div id="toast-container"></div>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+<div class="particles" id="pts"></div>
+
+<!-- ═══ DEV MODAL (Ctrl+Shift+D) ═══ -->
+<div id="devOverlay">
+    <div id="devModal">
+        <button id="devCloseBtn" onclick="closeDev()" title="Close (Esc)">×</button>
+        <div class="dev-tag"><span class="blink"></span> Developer Mode</div>
+        <h3>Add Staff ID</h3>
+        <p class="dev-sub">Only you know how to get here. Press Esc to close.</p>
+
+        <div class="dev-fg">
+            <label>Dev Password</label>
+            <input type="password" id="devPass" placeholder="Your secret password" autocomplete="off"/>
+        </div>
+        <div class="dev-fg">
+            <label>Staff ID to Register</label>
+            <input type="text" id="devStaffId" placeholder="e.g. STF2025001" autocomplete="off"/>
+        </div>
+
+        <button id="devAddBtn" onclick="devAddStaff()">Add Staff ID →</button>
+
+        <div id="devResult"></div>
+
+
+    </div>
+</div>
+
+<div class="scene">
+    <div class="left-panel">
+        <div class="glow-line"></div>
+        <div class="glow-line"></div>
+
+        <div class="brand">
+            <div class="brand-mark">N</div>
+            <span class="brand-name">NaukriSathi</span>
+            <span class="brand-badge">ADMIN</span>
+        </div>
+
+        <div class="illo-wrap">
+            <div class="badge"><span class="badge-dot" style="background:#8b5cf6"></span><span>Admin Panel</span></div>
+            <div class="badge"><span class="badge-dot" style="background:#6366f1"></span><span>Secure Access</span></div>
+            <div class="badge"><span class="badge-dot" style="background:#f43f5e"></span><span>Live Dashboard</span></div>
+            <div class="illo-inner">
+                <svg class="illo-svg" viewBox="0 0 420 340" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="gFloor2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e2e8f0"/><stop offset="100%" stop-color="#cbd5e1"/></linearGradient>
+                        <linearGradient id="gDesk2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ede9fe"/><stop offset="100%" stop-color="#c4b5fd"/></linearGradient>
+                        <linearGradient id="gAdmin" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#8b5cf6"/></linearGradient>
+                        <linearGradient id="gScreen2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0f172a"/><stop offset="100%" stop-color="#1e293b"/></linearGradient>
+                        <radialGradient id="gGlow2" cx="50%" cy="80%" r="50%"><stop offset="0%" stop-color="rgba(99,102,241,0.13)"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+                        <filter id="fShadow2"><feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="rgba(99,102,241,0.2)"/></filter>
+                    </defs>
+                    <ellipse cx="210" cy="298" rx="176" ry="34" fill="url(#gFloor2)" opacity=".55"/>
+                    <ellipse cx="210" cy="298" rx="176" ry="34" fill="url(#gGlow2)"/>
+                    <path d="M80 240 L210 174 L340 240 L210 306 Z" fill="url(#gDesk2)" filter="url(#fShadow2)"/>
+                    <path d="M210 306 L340 240 L340 257 L210 323 Z" fill="#a78bfa" opacity=".65"/>
+                    <path d="M80 240 L210 306 L210 323 L80 257 Z" fill="#7c3aed" opacity=".4"/>
+                    <rect x="200" y="150" width="20" height="22" rx="3" fill="#7c3aed" opacity=".75"/>
+                    <rect x="186" y="169" width="48" height="5" rx="2" fill="#6366f1" opacity=".65"/>
+                    <rect x="138" y="78" width="144" height="80" rx="10" fill="url(#gAdmin)" filter="url(#fShadow2)"/>
+                    <rect x="143" y="83" width="134" height="70" rx="7" fill="url(#gScreen2)"/>
+                    <rect x="148" y="88" width="124" height="10" rx="3" fill="rgba(99,102,241,0.6)"/>
+                    <circle cx="154" cy="93" r="2.5" fill="#f87171"/>
+                    <circle cx="161" cy="93" r="2.5" fill="#fbbf24"/>
+                    <circle cx="168" cy="93" r="2.5" fill="#34d399"/>
+                    <rect x="178" y="90" width="50" height="6" rx="2" fill="rgba(255,255,255,0.15)"/>
+                    <rect x="148" y="102" width="22" height="46" rx="2" fill="rgba(99,102,241,0.5)"/>
+                    <rect x="152" y="107" width="14" height="3" rx="1" fill="rgba(255,255,255,0.7)"/>
+                    <rect x="152" y="113" width="14" height="3" rx="1" fill="rgba(255,255,255,0.4)"/>
+                    <rect x="152" y="119" width="14" height="3" rx="1" fill="rgba(255,255,255,0.4)"/>
+                    <rect x="152" y="125" width="14" height="3" rx="1" fill="rgba(255,255,255,0.4)"/>
+                    <rect x="152" y="131" width="14" height="3" rx="1" fill="rgba(255,255,255,0.4)"/>
+                    <rect x="152" y="137" width="14" height="3" rx="1" fill="rgba(255,255,255,0.4)"/>
+                    <rect x="174" y="102" width="26" height="16" rx="2" fill="rgba(139,92,246,0.7)"/>
+                    <rect x="174" y="105" width="18" height="2" rx="1" fill="rgba(255,255,255,0.5)"/>
+                    <text x="176" y="116" font-family="Inter" font-size="6" font-weight="700" fill="#c4b5fd">247</text>
+                    <rect x="203" y="102" width="26" height="16" rx="2" fill="rgba(99,102,241,0.6)"/>
+                    <rect x="203" y="105" width="18" height="2" rx="1" fill="rgba(255,255,255,0.5)"/>
+                    <text x="205" y="116" font-family="Inter" font-size="6" font-weight="700" fill="#a5b4fc">94%</text>
+                    <rect x="232" y="102" width="26" height="16" rx="2" fill="rgba(244,63,94,0.5)"/>
+                    <rect x="232" y="105" width="18" height="2" rx="1" fill="rgba(255,255,255,0.5)"/>
+                    <text x="234" y="116" font-family="Inter" font-size="6" font-weight="700" fill="#fca5a5">38</text>
+                    <rect x="174" y="121" width="84" height="27" rx="2" fill="rgba(15,23,42,0.3)"/>
+                    <rect x="178" y="137" width="6" height="9" rx="1" fill="#6366f1" opacity=".9"/>
+                    <rect x="186" y="132" width="6" height="14" rx="1" fill="#8b5cf6" opacity=".9"/>
+                    <rect x="194" y="130" width="6" height="16" rx="1" fill="#6366f1" opacity=".85"/>
+                    <rect x="202" y="127" width="6" height="19" rx="1" fill="#a78bfa" opacity=".9"/>
+                    <rect x="210" y="129" width="6" height="17" rx="1" fill="#6366f1" opacity=".8"/>
+                    <rect x="218" y="124" width="6" height="22" rx="1" fill="#8b5cf6" opacity=".9"/>
+                    <rect x="226" y="126" width="6" height="20" rx="1" fill="#06b6d4" opacity=".8"/>
+                    <rect x="234" y="130" width="6" height="16" rx="1" fill="#6366f1" opacity=".75"/>
+                    <rect x="242" y="128" width="6" height="18" rx="1" fill="#a78bfa" opacity=".85"/>
+                    <rect x="250" y="123" width="5" height="23" rx="1" fill="#8b5cf6" opacity=".9"/>
+                    <rect x="138" y="78" width="144" height="80" rx="10" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+                    <rect x="290" y="50" width="86" height="42" rx="7" fill="rgba(255,255,255,0.92)" stroke="rgba(99,102,241,.2)" stroke-width="1"/>
+                    <text x="300" y="66" font-family="Inter" font-size="7.5" fill="#475569">New Staff Added</text>
+                    <text x="300" y="80" font-family="Inter" font-size="12" font-weight="700" fill="#6366f1">+12 Today</text>
+                    <rect x="42" y="64" width="76" height="42" rx="7" fill="rgba(255,255,255,0.92)" stroke="rgba(139,92,246,.2)" stroke-width="1"/>
+                    <text x="52" y="80" font-family="Inter" font-size="7.5" fill="#475569">Pending Jobs</text>
+                    <text x="52" y="95" font-family="Inter" font-size="12" font-weight="700" fill="#8b5cf6">38 Active</text>
+                    <rect x="248" y="148" width="88" height="28" rx="14" fill="url(#gAdmin)"/>
+                    <text x="292" y="167" font-family="Inter" font-size="8.5" font-weight="600" fill="#fff" text-anchor="middle">🔐 Secure Admin</text>
+                    <circle cx="210" cy="246" r="14" fill="url(#gAdmin)" opacity=".9"/>
+                    <circle cx="210" cy="241" r="5" fill="rgba(255,255,255,0.8)"/>
+                    <path d="M201 256 Q210 250 219 256" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </div>
+        </div>
+
+        <div class="tagline">
+            <h1>Admin Control<br/>Centre</h1>
+            <p>Manage staff, approve jobs, and oversee<br/>all placement activity from one secure dashboard.</p>
+            <div class="stat-row" id="statRow">
+                <div class="stat-pill"><strong id="stat-staff">—</strong><span>Staff Members</span></div>
+                <div class="stat-pill"><strong id="stat-jobs">—</strong><span>Active Jobs</span></div>
+                <div class="stat-pill"><strong id="stat-placement">—</strong><span>Placement Rate</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="right-panel">
+        <div class="form-box" id="formBox">
+
+            <div class="tab-track">
+                <div class="tab-pill" id="tabPill"></div>
+                <div class="tab active" id="loginTab" role="tab" tabindex="0"
+                     onclick="showTab('Login')"
+                     onkeydown="if(event.key==='Enter'||event.key===' ')showTab('Login')">Login</div>
+                <div class="tab" id="signupTab" role="tab" tabindex="0"
+                     onclick="showTab('SignUp')"
+                     onkeydown="if(event.key==='Enter'||event.key===' ')showTab('SignUp')">Sign Up</div>
+            </div>
+
+            <div class="form-hd">
+                <h2 id="formTitle">Welcome, Admin 🔐</h2>
+                <p id="formSub">Sign in to access the admin portal</p>
+            </div>
+
+            <form id="loginForm" novalidate>
+
+                <div id="sfWrap">
+                    <div id="sfInner">
+                        <div class="fields-grid">
+                            <div class="fg full">
+                                <label>Full Name</label>
+                                <div class="iw">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                                    <input type="text" id="name" placeholder="Admin Name"/>
+                                </div>
+                            </div>
+                            <div class="fg full">
+                                <label>Email</label>
+                                <div class="iw">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>
+                                    <input type="email" id="email" placeholder="admin@naukrisathi.com"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="fg">
+                    <label>Staff ID</label>
+                    <div class="iw">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 4v16M16 4v16"/></svg>
+                        <input type="text" id="staffId" placeholder="ADM00123" required/>
+                    </div>
+                </div>
+
+                <div class="fg">
+                    <label>Password</label>
+                    <div class="iw">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                        <input type="password" id="password" placeholder="••••••••" required/>
+                    </div>
+                </div>
+
+                <div class="terms-row">
+                    <input type="checkbox" id="termsCheckbox" required/>
+                    <label for="termsCheckbox">I agree to the <a href="#">Terms &amp; Privacy Policy</a></label>
+                </div>
+
+                <div id="otpSection">
+                    <div class="fg" style="margin-top:4px">
+                        <label>One-Time Password</label>
+                        <div class="iw">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            <input type="text" id="otpInput" placeholder="000000" maxlength="6" style="letter-spacing:.35em;font-size:17px;font-weight:700;text-align:center;padding-left:12px"/>
+                        </div>
+                    </div>
+                    <button type="button" id="verifyOtpBtn" class="btn-sec">Verify OTP →</button>
+                </div>
+
+                <button id="submitBtn" type="submit" class="btn-primary">Login →</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    /* ─── particles ─── */
+    (function(){
+      var c=document.getElementById('pts');
+      var cols=['#6366f1','#8b5cf6','#a78bfa','#c084fc','#e879f9','#06b6d4'];
+      for(var i=0;i<28;i++){
+        var p=document.createElement('div');p.className='particle';
+        var s=Math.random()*4+2;
+        p.style.cssText='width:'+s+'px;height:'+s+'px;left:'+Math.random()*100+'%;bottom:'+Math.random()*15+'%;background:'+cols[Math.floor(Math.random()*cols.length)]+';--d:'+(7+Math.random()*9)+'s;--dl:'+Math.random()*8+'s;';
+        c.appendChild(p);
+      }
+    })();
+
+    /* ─── tabs ─── */
+    var currentTab='Login';
+    function showTab(tab){
+      currentTab=tab;
+      var isSignup=tab==='SignUp';
+      document.getElementById('tabPill').classList.toggle('right',isSignup);
+      document.getElementById('loginTab').classList.toggle('active',!isSignup);
+      document.getElementById('signupTab').classList.toggle('active',isSignup);
+      document.getElementById('formTitle').textContent=isSignup?'Create Admin Account ✨':'Welcome, Admin 🔐';
+      document.getElementById('formSub').textContent=isSignup?'Register a new admin account':'Sign in to access the admin portal';
+      document.getElementById('submitBtn').textContent=isSignup?'Create Account →':'Login →';
+      document.getElementById('sfWrap').classList.toggle('open',isSignup);
+      document.getElementById('otpSection').style.display='none';
+      document.getElementById('submitBtn').style.display='block';
+      document.getElementById('otpInput').value='';
+    }
+
+    function setLoading(btn,on,label){
+      if(on){btn.classList.add('loading');btn.innerHTML='<span class="spin"></span>'+label}
+      else{btn.classList.remove('loading');btn.textContent=label+' →'}
+    }
+
+    /* ─── login / register ─── */
+    document.getElementById('loginForm').addEventListener('submit',async function(e){
+      e.preventDefault();
+      var btn=document.getElementById('submitBtn');
+      if(currentTab==='SignUp'){
+        var admin={staffId:document.getElementById('staffId').value,name:document.getElementById('name').value,email:document.getElementById('email').value,password:document.getElementById('password').value};
+        setLoading(btn,true,'Creating Account…');
+        try{
+          var res=await fetch('http://localhost:8084/admin/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(admin)});
+          var text=await res.text();
+          toast(text);
+          if(text.toLowerCase().includes('otp')){
+            document.getElementById('otpSection').style.display='flex';
+            document.getElementById('submitBtn').style.display='none';
+          }
+        }catch(err){toast('Server not running. Please try again.','error');console.error(err)}
+        finally{setLoading(btn,false,'Create Account')}
+      }else{
+        var loginData={staffId:document.getElementById('staffId').value,password:document.getElementById('password').value};
+        setLoading(btn,true,'Signing In…');
+        try{
+          var res=await fetch('http://localhost:8084/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(loginData)});
+          var data=await res.json();
+          if(data.status==='Admin login success'){
+            localStorage.setItem('adminId',data.adminId);
+            localStorage.setItem('staffId',data.staffId);
+            toast('Login successful! Redirecting…','success');
+            setTimeout(function(){window.location.href='Addjobs-Admin.html';},1200);
+          }else{toast(data.status,'error')}
+        }catch(err){toast('Server not running. Please try again.','error');console.error(err)}
+        finally{setLoading(btn,false,'Login')}
+      }
+    });
+
+    /* ─── OTP verify ─── */
+    document.getElementById('verifyOtpBtn').addEventListener('click',async function(){
+      var staffId=document.getElementById('staffId').value;
+      var otp=document.getElementById('otpInput').value;
+      this.textContent='Verifying…';
+      try{
+        var res=await fetch('http://localhost:8084/admin/verify-otp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({staffId:staffId,otp:otp})});
+        var text=await res.text();
+        if(text.trim()==='ACCOUNT_DELETED'){
+          toast('Too many wrong attempts. Please register again.','error');
+          document.getElementById('otpSection').style.display='none';
+          document.getElementById('loginForm').reset();
+          showTab('SignUp');
+        }else if(text.includes('Invalid OTP')){
+          toast(text,'error');
+        }else if(text.includes('Successfully')){
+          toast('Email Verified Successfully!','success');
+          document.getElementById('otpSection').style.display='none';
+          document.getElementById('submitBtn').style.display='block';
+          showTab('Login');
+        }else{toast(text)}
+      }catch(err){toast('Error verifying OTP. Please try again.','error');console.error(err)}
+      finally{this.textContent='Verify OTP →'}
+    });
+
+    /* ═══════════════════════════════════════
+       DEV PANEL — Ctrl + Shift + D
+    ═══════════════════════════════════════ */
+    function openDev(){
+      document.getElementById('devOverlay').classList.add('open');
+      setTimeout(function(){ document.getElementById('devPass').focus(); }, 200);
+    }
+    function closeDev(){
+      document.getElementById('devOverlay').classList.remove('open');
+      document.getElementById('devPass').value='';
+      document.getElementById('devStaffId').value='';
+      document.getElementById('devResult').style.display='none';
+    }
+
+    document.getElementById('devOverlay').addEventListener('click', function(e){
+      if(e.target === this) closeDev();
+    });
+
+    document.addEventListener('keydown', function(e){
+      if(e.ctrlKey && e.shiftKey && e.key === 'D'){
+        e.preventDefault();
+        openDev();
+      }
+      if(e.key === 'Escape') closeDev();
+    });
+
+    async function devAddStaff(){
+      var devPassword = document.getElementById('devPass').value.trim();
+      var staffId     = document.getElementById('devStaffId').value.trim();
+      var result      = document.getElementById('devResult');
+      var btn         = document.getElementById('devAddBtn');
+
+      if(!devPassword || !staffId){
+        result.className='fail'; result.style.display='block';
+        result.textContent='⚠ Both fields are required.'; return;
+      }
+
+      btn.classList.add('loading'); btn.textContent='Adding…';
+      result.style.display='none';
+
+      try{
+        var res = await fetch('http://localhost:8084/admin/add-staff',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ devPassword, staffId })
+        });
+        var text = await res.text();
+
+        if(text === 'Staff ID added successfully'){
+          result.className='ok'; result.style.display='block';
+          result.textContent='✓ Staff ID "'+staffId+'" added successfully!';
+          document.getElementById('devStaffId').value='';
+          document.getElementById('devPass').value='';
+        } else if(text === 'Unauthorized'){
+          result.className='fail'; result.style.display='block';
+          result.textContent='✕ Wrong developer password.';
+        } else {
+          result.className='fail'; result.style.display='block';
+          result.textContent='ℹ '+text;
+        }
+      }catch(err){
+        result.className='fail'; result.style.display='block';
+        result.textContent='✕ Could not reach server.';
+      }finally{
+        btn.classList.remove('loading'); btn.textContent='Add Staff ID →';
+      }
+    }
+
+    /* Enter key inside dev modal */
+    document.getElementById('devModal').addEventListener('keydown', function(e){
+      if(e.key === 'Enter') devAddStaff();
+    });
+
+    /* ─── toast system ─── */
+    (function(){
+      var ICONS={success:'✓',error:'✕',warning:'⚠',info:'ℹ'};
+      var TITLES={success:'Success',error:'Error',warning:'Warning',info:'Notice'};
+      function dismiss(el){clearTimeout(el._tt);el.classList.remove('show');el.classList.add('hide');setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},320)}
+      window.toast=function(message,type,duration){
+        message=(message||'').toString();
+        if(!type){
+          if(/[Ee]rror|[Ff]ail|[Ii]nvalid|[Ww]rong|not run/i.test(message))type='error';
+          else if(/[Ss]uccess|[Vv]erif|[Aa]dded|[Ss]aved|[Cc]reat/i.test(message))type='success';
+          else if(/[Ww]arn/i.test(message))type='warning';
+          else type='info';
+        }
+        duration=duration||(type==='error'?5500:4200);
+        var clean=message.replace(/^[\u{274C}\u{2705}\u{26A0}\u{2139}]+\s*/u,'').replace(/\n/g,'<br>');
+        var c=document.getElementById('toast-container');if(!c)return;
+        var el=document.createElement('div');el.className='toast toast-'+type;el.style.setProperty('--toast-dur',duration+'ms');
+        el.innerHTML='<div class="toast-icon">'+ICONS[type]+'</div><div class="toast-body"><div class="toast-title">'+TITLES[type]+'</div><div class="toast-msg">'+clean+'</div></div><button class="toast-close" aria-label="Dismiss">\xd7</button><div class="toast-progress"></div>';
+        c.appendChild(el);
+        requestAnimationFrame(function(){requestAnimationFrame(function(){el.classList.add('show')})});
+        el.querySelector('.toast-close').addEventListener('click',function(){dismiss(el)});
+        el._tt=setTimeout(function(){dismiss(el)},duration);
+        el.addEventListener('mouseenter',function(){clearTimeout(el._tt);var p=el.querySelector('.toast-progress');if(p)p.style.animationPlayState='paused'});
+        el.addEventListener('mouseleave',function(){var p=el.querySelector('.toast-progress');if(p)p.style.animationPlayState='running';el._tt=setTimeout(function(){dismiss(el)},1800)});
+      };
+    })();
+</script>
+
+<script>
+    (async function loadStats() {
+      try {
+        const res = await fetch('http://localhost:8084/admin/stats');
+        if (!res.ok) throw new Error();
+        const d = await res.json();
+        document.getElementById('stat-staff').textContent = d.staffMembers > 0 ? d.staffMembers : '247';
+        document.getElementById('stat-jobs').textContent  = d.activeJobs > 0 ? d.activeJobs : '38';
+        document.getElementById('stat-placement').textContent = d.placementRate > 0 ? Math.round(d.placementRate) + '%' : '94%';
+      } catch (e) {
+        document.getElementById('stat-staff').textContent = '247';
+        document.getElementById('stat-jobs').textContent  = '38';
+        document.getElementById('stat-placement').textContent = '94%';
+      }
+    })();
+</script>
+</body>
+</html>

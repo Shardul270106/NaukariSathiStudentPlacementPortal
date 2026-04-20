@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <title>Applied Jobs - Naukrisathi</title>
+    <link rel="stylesheet" href="homepage.css">
+
+    <!-- ✅ ADD THIS SMALL FIX -->
+    <style>
+        /* Map old backend classes to new UI */
+        .status {
+          display: inline-flex;
+          align-items: center;
+          padding: 2px 10px;
+          border-radius: 16px;
+          font-size: 10px;
+          font-weight: 600;
+        }
+
+        .accepted {
+          background: rgba(16, 185, 129, 0.1);
+          color: #059669;
+          border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .rejected {
+          background: rgba(239, 68, 68, 0.1);
+          color: #dc2626;
+          border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .applied {
+          background: rgba(245, 158, 11, 0.1);
+          color: #d97706;
+          border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="navbar-left">
+        <a href="homepage.html"><div class="logo">NaukriSathi</div></a>
+    </div>
+
+    <ul class="navbar-center">
+        <li><a href="homepage.html">Home</a></li>
+        <li><a href="profile.html">Profile</a></li>
+        <li><a href="appliedJobs.html" class="active">Applied Jobs</a></li>
+        <li><a href="aiAssistance.html" >Margdarshak AI Assistant</a></li>
+    </ul>
+
+    <div class="navbar-right">
+        <button class="btn-outline">Sign Out</button>
+    </div>
+</nav>
+
+<!-- CONTENT -->
+<div class="applied-container">
+
+    <!-- SUMMARY -->
+    <div class="summary-grid">
+        <div class="summary-card">
+            <h4>Total Applications</h4>
+            <p id="totalApps">0</p>
+        </div>
+
+        <div class="summary-card">
+            <h4>Accepted</h4>
+            <p id="acceptedApps">0</p>
+        </div>
+
+        <div class="summary-card">
+            <h4>Rejected</h4>
+            <p id="rejectedApps">0</p>
+        </div>
+
+        <div class="summary-card">
+            <h4>Top Package</h4>
+            <p id="packageValue">Not Placed</p>
+        </div>
+    </div>
+
+    <!-- PLACEMENT -->
+    <h3 class="section-title">Placement Status</h3>
+    <div id="placementCards" class="placement-container"></div>
+
+    <!-- TABLE -->
+    <h3 class="section-title">Application History</h3>
+
+    <div class="table-wrapper">
+        <table class="applied-table">
+            <thead>
+            <tr>
+                <th>Job ID</th>
+                <th>Applied Date</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody id="jobsTable"></tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="footer-content">
+        <div>
+            <div class="logo">Naukrisathi</div>
+            <p>Connecting remarkable students with extraordinary career opportunities globally.</p>
+        </div>
+
+        <div>
+            <h4>Support & Policies</h4>
+            <div class="footer-links">
+                <a href="homepage.html">Home</a>
+                <a href="#">About Us</a>
+            </div>
+        </div>
+
+        <div>
+            <h4>Contact Us</h4>
+            <div class="footer-links">
+                <p>Email: support@placementpro.com</p>
+                <p>Phone: +91-0000000000</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        &copy; 2026 Naukrisathi
+    </div>
+</footer>
+
+<!-- ✅ YOUR ORIGINAL BACKEND JS (UNCHANGED) -->
+<script>
+
+    const userId = localStorage.getItem("userId");
+
+    const table = document.getElementById("jobsTable");
+
+    let total=0;
+    let accepted=0;
+    let rejected=0;
+
+    fetch(`http://localhost:8084/applications/student/${userId}`)
+    .then(res=>res.json())
+    .then(data=>{
+
+    table.innerHTML="";
+
+    data.forEach(app=>{
+
+    total++;
+
+    let statusClass="applied";
+
+    if(app.status==="ACCEPTED"){
+    accepted++;
+    statusClass="accepted";
+    }
+
+    if(app.status==="REJECTED"){
+    rejected++;
+    statusClass="rejected";
+    }
+
+    table.innerHTML+=`
+
+    <tr>
+    <td>${app.jobId}</td>
+    <td>${app.appliedAt.split("T")[0]}</td>
+    <td>
+    <span class="status ${statusClass}">
+    ${app.status}
+    </span>
+    </td>
+    </tr>
+
+    `;
+
+    });
+
+    document.getElementById("totalApps").innerText=total;
+    document.getElementById("acceptedApps").innerText=accepted;
+    document.getElementById("rejectedApps").innerText=rejected;
+
+    });
+
+    fetch(`http://localhost:8084/placements/student/${userId}`)
+    .then(res=>res.json())
+    .then(data=>{
+
+    const container=document.getElementById("placementCards");
+
+    if(data.length===0){
+    container.innerHTML="<p>Not Placed Yet</p>";
+    return;
+    }
+
+    data.forEach(p=>{
+
+    container.innerHTML+=`
+
+    <div class="placement-card">
+
+    <h3>${p.companyName}</h3>
+
+    <p><b>Role:</b> ${p.jobRole}</p>
+
+    <p class="package">${p.packageLpa} LPA</p>
+
+    <p>${p.placementType}</p>
+
+    <p>Offer Date: ${p.offerDate}</p>
+
+    </div>
+
+    `;
+
+    document.getElementById("packageValue").innerText=p.packageLpa+" LPA";
+
+    });
+
+    });
+
+</script>
+
+<script src="auth.js"></script>
+
+</body>
+</html>

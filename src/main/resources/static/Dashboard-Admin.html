@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Admin PlacementPro</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        :root {
+          --text-main: #0f172a;
+          --text-muted: #475569;
+          --text-light: #94a3b8;
+          --border: rgba(15, 23, 42, 0.08);
+          --border-strong: rgba(15, 23, 42, 0.14);
+          --primary: #4f46e5;
+          --primary-light: #818cf8;
+          --cyan: #06b6d4;
+          --emerald: #10b981;
+          --amber: #f59e0b;
+          --rose: #f43f5e;
+          --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+          --card-bg: rgba(255, 255, 255, 0.6);
+          --card-bg-solid: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          color: var(--text-main);
+          line-height: 1.5;
+          font-size: 14px;
+          background-color: #f1f5f9;
+          background-image:
+            radial-gradient(at 0% 0%, hsla(253, 100%, 94%, 0.7) 0, transparent 50%),
+            radial-gradient(at 100% 0%, hsla(186, 100%, 92%, 0.7) 0, transparent 50%),
+            radial-gradient(at 50% 100%, hsla(210, 100%, 94%, 0.5) 0, transparent 50%);
+          background-attachment: fixed;
+          min-height: 100vh;
+        }
+
+        a { text-decoration: none; color: inherit; transition: color 0.2s; }
+
+        @keyframes fadeUp {
+          0% { opacity: 0; transform: translateY(16px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse-dot {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.5; transform: scale(0.85); }
+        }
+        @keyframes shimmer {
+          0% { background-position: -200% 0; }
+          100% { background-position: 200% 0; }
+        }
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+
+        /* ── NAVBAR ── */
+        .navbar {
+          position: sticky; top: 0; z-index: 100;
+          display: flex; justify-content: space-between; align-items: center;
+          padding: 0 40px; height: 60px;
+          background: rgba(255,255,255,0.75); backdrop-filter: blur(24px);
+          border-bottom: 1px solid var(--border);
+        }
+        .logo {
+          font-size: 17px; font-weight: 800; letter-spacing: -0.5px;
+          background: var(--primary-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .logo-badge {
+          display: inline-block; font-size: 10px; font-weight: 700; color: var(--primary); background: rgba(79,70,229,0.1);
+          border: 1px solid rgba(79,70,229,0.2); border-radius: 4px; padding: 1px 6px; letter-spacing: 1.2px;
+          text-transform: uppercase; margin-left: 8px; vertical-align: middle; -webkit-text-fill-color: var(--primary);
+        }
+        .navbar-center { display: flex; gap: 4px; list-style: none; }
+        .navbar-center li a {
+          display: block; padding: 6px 14px; border-radius: 6px;
+          font-size: 13.5px; font-weight: 500; color: var(--text-muted); transition: 0.15s;
+        }
+        .navbar-center li a:hover { background: rgba(79,70,229,0.07); color: var(--primary); }
+        .navbar-center li a.active { background: rgba(79,70,229,0.1); color: var(--primary); font-weight: 600; }
+        .btn-outline {
+          background: white; color: var(--primary); border: 1px solid rgba(79,70,229,0.3);
+          padding: 7px 16px; border-radius: 7px; font-weight: 600; font-size: 13px; cursor: pointer; transition: 0.2s;
+          font-family: inherit;
+        }
+        .btn-outline:hover { border-color: var(--primary); box-shadow: 0 2px 8px rgba(79,70,229,0.15); }
+
+        /* ── LAYOUT ── */
+        .page-wrapper { max-width: 1400px; margin: 0 auto; padding: 32px 24px 80px; }
+
+        .page-header {
+          display: flex; justify-content: space-between; align-items: flex-start;
+          margin-bottom: 32px;
+          opacity: 0; animation: fadeUp 0.6s 0.05s cubic-bezier(0.16,1,0.3,1) forwards;
+        }
+        .page-header h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; }
+        .page-header p { font-size: 13.5px; color: var(--text-muted); margin-top: 4px; }
+        .live-badge {
+          display: flex; align-items: center; gap: 6px;
+          background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2);
+          border-radius: 20px; padding: 5px 12px; font-size: 12px; font-weight: 600; color: var(--emerald);
+        }
+        .live-dot { width: 7px; height: 7px; background: var(--emerald); border-radius: 50%; animation: pulse-dot 1.5s infinite; }
+
+        /* ── STAT CARDS ── */
+        .stats-grid {
+          display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;
+        }
+        .stat-card {
+          background: var(--card-bg); backdrop-filter: blur(20px);
+          border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px;
+          box-shadow: 0 1px 12px rgba(0,0,0,0.04); position: relative; overflow: hidden;
+          opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) forwards;
+        }
+        .stat-card::before {
+          content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+          background: var(--accent, var(--primary-gradient));
+        }
+        .stat-card .icon-wrap {
+          width: 40px; height: 40px; border-radius: 10px;
+          background: var(--icon-bg, rgba(79,70,229,0.1));
+          display: flex; align-items: center; justify-content: center;
+          font-size: 18px; margin-bottom: 12px;
+        }
+        .stat-card .value { font-size: 28px; font-weight: 800; letter-spacing: -1px; line-height: 1; }
+        .stat-card .label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; margin-top: 4px; }
+        .stat-card .delta {
+          font-size: 11.5px; font-weight: 600; margin-top: 10px;
+          display: flex; align-items: center; gap: 3px;
+        }
+        .delta.up { color: var(--emerald); }
+        .delta.down { color: var(--rose); }
+        .delta.neutral { color: var(--text-muted); }
+
+        /* ── CHART GRID ── */
+        .charts-row { display: grid; gap: 16px; margin-bottom: 16px; }
+        .charts-row.col-2 { grid-template-columns: 1fr 1fr; }
+        .charts-row.col-3 { grid-template-columns: 2fr 1fr 1fr; }
+        .charts-row.col-12 { grid-template-columns: 1.4fr 1fr; }
+
+        .chart-card {
+          background: var(--card-bg); backdrop-filter: blur(20px);
+          border: 1px solid var(--border); border-radius: 14px; padding: 22px 24px;
+          box-shadow: 0 1px 12px rgba(0,0,0,0.04);
+          opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) forwards;
+        }
+        .chart-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+        .chart-card-header h3 { font-size: 15px; font-weight: 700; letter-spacing: -0.2px; }
+        .chart-card-header p { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+        .chart-pill {
+          font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px;
+          background: rgba(79,70,229,0.08); color: var(--primary); border: 1px solid rgba(79,70,229,0.15);
+        }
+        .chart-canvas-wrap { position: relative; }
+
+        /* ── AI INSIGHTS ── */
+        .ai-panel {
+          background: linear-gradient(135deg, rgba(79,70,229,0.06) 0%, rgba(6,182,212,0.06) 100%);
+          border: 1px solid rgba(79,70,229,0.15); border-radius: 14px; padding: 22px 24px;
+          opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) forwards;
+        }
+        .ai-panel-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+        .ai-icon { font-size: 20px; }
+        .ai-panel-header h3 { font-size: 15px; font-weight: 700; }
+        .ai-badge {
+          font-size: 10px; font-weight: 700; color: white; letter-spacing: 0.8px;
+          background: var(--primary-gradient); border-radius: 4px; padding: 2px 7px; text-transform: uppercase;
+        }
+        .ai-insights-list { display: flex; flex-direction: column; gap: 10px; }
+        .ai-insight-item {
+          background: rgba(255,255,255,0.7); border: 1px solid var(--border); border-radius: 10px;
+          padding: 12px 14px; font-size: 13px; line-height: 1.55; color: var(--text-main);
+          display: flex; gap: 10px; align-items: flex-start;
+        }
+        .ai-insight-item .insight-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+        .ai-insight-item strong { font-weight: 700; }
+        #aiInsightText { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+        .ai-loading { display: flex; align-items: center; gap: 8px; color: var(--text-muted); font-size: 13px; }
+        .spinner { width: 14px; height: 14px; border: 2px solid rgba(79,70,229,0.2); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.7s linear infinite; }
+        .ai-generate-btn {
+          display: inline-flex; align-items: center; gap: 6px; margin-top: 14px;
+          background: var(--primary-gradient); color: white; border: none; border-radius: 8px;
+          padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s;
+          font-family: inherit;
+        }
+        .ai-generate-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+        .ai-generate-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+        /* ── RECENT TABLE ── */
+        .table-card {
+          background: var(--card-bg); backdrop-filter: blur(20px);
+          border: 1px solid var(--border); border-radius: 14px; overflow: hidden;
+          box-shadow: 0 1px 12px rgba(0,0,0,0.04);
+          opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) forwards;
+        }
+        .table-card-header { padding: 20px 24px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+        .table-card-header h3 { font-size: 15px; font-weight: 700; }
+        table { width: 100%; border-collapse: collapse; }
+        thead tr { background: rgba(248,250,252,0.8); }
+        thead th { padding: 10px 16px; text-align: left; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; }
+        tbody tr { border-top: 1px solid var(--border); transition: background 0.15s; }
+        tbody tr:hover { background: rgba(79,70,229,0.03); }
+        tbody td { padding: 12px 16px; font-size: 13px; }
+        .status-badge {
+          display: inline-block; font-size: 11px; font-weight: 600; border-radius: 20px; padding: 3px 9px;
+        }
+        .status-placed { background: rgba(16,185,129,0.1); color: var(--emerald); border: 1px solid rgba(16,185,129,0.2); }
+        .status-applied { background: rgba(79,70,229,0.1); color: var(--primary); border: 1px solid rgba(79,70,229,0.2); }
+        .status-pending { background: rgba(245,158,11,0.1); color: var(--amber); border: 1px solid rgba(245,158,11,0.2); }
+
+        /* ── TOP COMPANIES ── */
+        .company-list { display: flex; flex-direction: column; gap: 12px; }
+        .company-row { display: flex; align-items: center; gap: 12px; }
+        .company-avatar {
+          width: 36px; height: 36px; border-radius: 8px; background: var(--primary-gradient);
+          display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: white; flex-shrink: 0;
+        }
+        .company-info { flex: 1; min-width: 0; }
+        .company-info .name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .company-info .count { font-size: 11.5px; color: var(--text-muted); }
+        .company-bar-wrap { width: 80px; height: 6px; background: rgba(15,23,42,0.07); border-radius: 3px; overflow: hidden; }
+        .company-bar { height: 100%; border-radius: 3px; background: var(--primary-gradient); }
+
+        /* ── FOOTER ── */
+        .footer { border-top: 1px solid var(--border); padding: 48px 20px 32px; background: rgba(255,255,255,0.5); backdrop-filter: blur(10px); }
+        .footer-content { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; margin-bottom: 48px; }
+        .footer p, .footer-links a { color: var(--text-muted); font-size: 13.5px; }
+        .footer h4 { font-size: 13px; margin-bottom: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; }
+        .footer-links { display: flex; flex-direction: column; gap: 10px; }
+        .footer-bottom { text-align: center; color: var(--text-muted); border-top: 1px solid var(--border); max-width: 1400px; margin: 0 auto; padding-top: 20px; font-size: 12.5px; }
+
+        @media (max-width: 1100px) {
+          .stats-grid { grid-template-columns: repeat(2, 1fr); }
+          .charts-row.col-3 { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 768px) {
+          .navbar-center { display: none; }
+          .stats-grid { grid-template-columns: 1fr 1fr; }
+          .charts-row.col-2, .charts-row.col-12 { grid-template-columns: 1fr; }
+          .page-wrapper { padding: 20px 14px 60px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div>
+        <span class="logo">NaukriSathi</span>
+        <span class="logo-badge">Admin</span>
+    </div>
+    <ul class="navbar-center">
+        <li><a href="Dashboard-Admin.html" class="active">Dashboard</a></li>
+        <li><a href="AddJobs-Admin.html">Add Job</a></li>
+        <li><a href="ManageJobs-Admin.html">Manage Jobs</a></li>
+        <li><a href="Applications-Admin.html">Applications</a></li>
+        <li><a href="ManageStudents-Admin.html">Manage Students</a></li>
+        <li><a href="PlacementRecords-Admin.html">Placement Records</a></li>
+    </ul>
+    <button class="btn-outline">Sign Out</button>
+</nav>
+
+<!-- PAGE -->
+<div class="page-wrapper">
+
+    <!-- HEADER -->
+    <div class="page-header">
+        <div>
+            <h1>Analytics Dashboard</h1>
+            <p>Real-time overview of recruitment activity, placements & student performance</p>
+        </div>
+        <div class="live-badge"><span class="live-dot"></span> Live Data</div>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="stats-grid">
+        <div class="stat-card" style="--accent: linear-gradient(90deg,#4f46e5,#818cf8); --icon-bg: rgba(79,70,229,0.1); animation-delay:0.1s">
+            <div class="icon-wrap">🎓</div>
+            <div class="value" id="statStudents">—</div>
+            <div class="label">Total Students</div>
+            <div class="delta up" id="deltaStudents">↑ Loading...</div>
+        </div>
+        <div class="stat-card" style="--accent: linear-gradient(90deg,#10b981,#34d399); --icon-bg: rgba(16,185,129,0.1); animation-delay:0.15s">
+            <div class="icon-wrap">✅</div>
+            <div class="value" id="statPlaced">—</div>
+            <div class="label">Students Placed</div>
+            <div class="delta up" id="deltaPlaced">↑ Loading...</div>
+        </div>
+        <div class="stat-card" style="--accent: linear-gradient(90deg,#06b6d4,#38bdf8); --icon-bg: rgba(6,182,212,0.1); animation-delay:0.2s">
+            <div class="icon-wrap">💼</div>
+            <div class="value" id="statJobs">—</div>
+            <div class="label">Active Jobs</div>
+            <div class="delta neutral" id="deltaJobs">Loading...</div>
+        </div>
+        <div class="stat-card" style="--accent: linear-gradient(90deg,#f59e0b,#fbbf24); --icon-bg: rgba(245,158,11,0.1); animation-delay:0.25s">
+            <div class="icon-wrap">📨</div>
+            <div class="value" id="statApps">—</div>
+            <div class="label">Total Applications</div>
+            <div class="delta up" id="deltaApps">↑ Loading...</div>
+        </div>
+    </div>
+
+    <!-- ROW 1: Placement Trend + Pie + Mini Stats -->
+    <div class="charts-row col-3" style="margin-bottom:16px;">
+
+        <div class="chart-card" style="animation-delay:0.3s">
+            <div class="chart-card-header">
+                <div><h3>Placement Trend</h3><p>Monthly placements over the year</p></div>
+                <span class="chart-pill">2025–26</span>
+            </div>
+            <div class="chart-canvas-wrap"><canvas id="placementTrendChart" height="200"></canvas></div>
+        </div>
+
+        <div class="chart-card" style="animation-delay:0.35s">
+            <div class="chart-card-header">
+                <div><h3>Placement Type</h3><p>On Campus vs Off Campus</p></div>
+            </div>
+            <div class="chart-canvas-wrap"><canvas id="placementTypeChart" height="190"></canvas></div>
+        </div>
+
+        <div class="chart-card" style="animation-delay:0.4s">
+            <div class="chart-card-header">
+                <div><h3>Application Status</h3><p>Across all job postings</p></div>
+            </div>
+            <div class="chart-canvas-wrap"><canvas id="appStatusChart" height="190"></canvas></div>
+        </div>
+
+    </div>
+
+    <!-- ROW 2: Package Distribution + Branch Breakdown -->
+    <div class="charts-row col-2" style="margin-bottom:16px;">
+
+        <div class="chart-card" style="animation-delay:0.45s">
+            <div class="chart-card-header">
+                <div><h3>Package Distribution</h3><p>LPA ranges across placed students</p></div>
+                <span class="chart-pill">LPA</span>
+            </div>
+            <div class="chart-canvas-wrap"><canvas id="packageChart" height="180"></canvas></div>
+        </div>
+
+        <div class="chart-card" style="animation-delay:0.5s">
+            <div class="chart-card-header">
+                <div><h3>Branch-wise Placement</h3><p>Placement count per department</p></div>
+            </div>
+            <div class="chart-canvas-wrap"><canvas id="branchChart" height="180"></canvas></div>
+        </div>
+
+    </div>
+
+    <!-- ROW 3: Top Companies + AI Insights -->
+    <div class="charts-row col-12" style="margin-bottom:16px;">
+
+        <div class="chart-card" style="animation-delay:0.52s">
+            <div class="chart-card-header">
+                <div><h3>Jobs by Category</h3><p>Distribution across job types</p></div>
+            </div>
+            <div class="chart-canvas-wrap"><canvas id="jobCategoryChart" height="200"></canvas></div>
+        </div>
+
+        <div class="chart-card" style="animation-delay:0.54s">
+            <div class="chart-card-header">
+                <div><h3>Top Hiring Companies</h3><p>By placement count</p></div>
+            </div>
+            <div class="company-list" id="topCompaniesList">
+                <div style="color:var(--text-muted);font-size:13px;">Loading...</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- AI INSIGHTS -->
+    <div class="ai-panel" style="margin-bottom:16px; animation-delay:0.58s">
+        <div class="ai-panel-header">
+            <span class="ai-icon">🤖</span>
+            <h3>AI Placement Insights</h3>
+            <span class="ai-badge">Mistral via Ollama</span>
+        </div>
+        <div id="aiInsightsContainer">
+            <div id="aiInsightText" style="color:var(--text-muted);font-size:13px;">
+                Click the button below to generate intelligent insights about your placement data using Mistral AI.
+            </div>
+        </div>
+        <button class="ai-generate-btn" id="aiGenerateBtn" onclick="generateAIInsights()">
+            ✨ Generate AI Insights
+        </button>
+    </div>
+
+    <!-- RECENT PLACEMENTS TABLE -->
+    <div class="table-card" style="animation-delay:0.62s; margin-bottom:16px;">
+        <div class="table-card-header">
+            <h3>Recent Placements</h3>
+            <a href="PlacementRecords-Admin.html" style="font-size:13px;color:var(--primary);font-weight:600;">View All →</a>
+        </div>
+        <table>
+            <thead>
+            <tr>
+                <th>Student</th>
+                <th>Company</th>
+                <th>Role</th>
+                <th>Package</th>
+                <th>Type</th>
+                <th>Offer Date</th>
+            </tr>
+            </thead>
+            <tbody id="recentPlacementsBody">
+            <tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:24px;">Loading...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- RECENT APPLICATIONS TABLE -->
+    <div class="table-card" style="animation-delay:0.66s;">
+        <div class="table-card-header">
+            <h3>Recent Applications</h3>
+            <a href="Applications-Admin.html" style="font-size:13px;color:var(--primary);font-weight:600;">View All →</a>
+        </div>
+        <table>
+            <thead>
+            <tr>
+                <th>Application ID</th>
+                <th>Job ID</th>
+                <th>Status</th>
+                <th>AI Score</th>
+                <th>Applied At</th>
+                <th>Matched Skills</th>
+            </tr>
+            </thead>
+            <tbody id="recentApplicationsBody">
+            <tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:24px;">Loading...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="footer-content">
+        <div>
+            <div style="font-size:18px;font-weight:800;color:#0f172a;margin-bottom:14px;">NaukriSathi <span style="color:var(--primary);">Admin</span></div>
+            <p>Central control for recruitment, analytics, and placement operations.</p>
+        </div>
+        <div>
+            <h4>Admin Shortcuts</h4>
+            <div class="footer-links">
+                <a href="AddJobs-Admin.html">Post New Job</a>
+                <a href="ManageJobs-Admin.html">Manage Postings</a>
+                <a href="Applications-Admin.html">Review Applications</a>
+            </div>
+        </div>
+        <div>
+            <h4>System & Support</h4>
+            <div class="footer-links">
+                <a href="#">Server Status: Online</a>
+                <a href="#">Contact IT Support</a>
+                <a href="#">Admin Documentation</a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">&copy; 2026 PlacementPro Administrator. All rights reserved.</div>
+</footer>
+
+<script>
+    const API = 'http://localhost:8084';
+    const OLLAMA_API = 'http://localhost:11434';
+
+    // ── Chart defaults ──
+    Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
+    Chart.defaults.color = '#475569';
+
+    const COLORS = {
+      indigo: '#4f46e5', cyan: '#06b6d4', emerald: '#10b981',
+      amber: '#f59e0b', rose: '#f43f5e', violet: '#7c3aed', sky: '#0ea5e9', orange: '#f97316'
+    };
+    const PALETTE = Object.values(COLORS);
+
+    // ── Helpers ──
+    function fmt(n) { return n >= 1000 ? (n/1000).toFixed(1)+'k' : n; }
+    function initials(name) { return name ? name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase() : '??'; }
+
+    // ── Load dashboard data ──
+    async function loadDashboard() {
+      try {
+        const res = await fetch(`${API}/admin/dashboard/summary`);
+        const d = await res.json();
+        renderStats(d);
+        renderCharts(d);
+        renderTables(d);
+        renderTopCompanies(d.topCompanies || []);
+      } catch(e) {
+        console.warn('API unavailable, loading mock data', e);
+        loadMockData();
+      }
+    }
+
+    function loadMockData() {
+      const mock = {
+        totalStudents: 1248, totalPlaced: 743, activeJobs: 38, totalApplications: 3192,
+        placementTrend: { labels: ['Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun'], data: [12,18,25,40,55,72,90,110,130,155,180,743] },
+        placementTypeSplit: { onCampus: 589, offCampus: 154 },
+        applicationStatusSplit: { PENDING: 210, REVIEWED: 890, SHORTLISTED: 644, REJECTED: 1198, OFFERED: 250 },
+        packageDistribution: { labels: ['<4 LPA','4–8 LPA','8–12 LPA','12–20 LPA','20+ LPA'], data: [45, 210, 280, 145, 63] },
+        branchPlacement: { labels: ['CSE','IT','ECE','MECH','CIVIL','MBA'], data: [310, 198, 115, 72, 28, 20] },
+        jobCategories: { labels: ['IT / Software','Finance','Core Engg','Sales & Mktg','Consulting','Others'], data: [18, 6, 7, 3, 2, 2] },
+        topCompanies: [
+          { name: 'TCS', placements: 95 },
+          { name: 'Infosys', placements: 82 },
+          { name: 'Wipro', placements: 64 },
+          { name: 'Accenture', placements: 55 },
+          { name: 'Cognizant', placements: 48 },
+        ],
+        recentPlacements: [
+          { studentName: 'Priya Sharma', companyName: 'TCS', jobRole: 'SDE', packageLpa: 7.5, placementType: 'ON_CAMPUS', offerDate: '2025-03-12' },
+          { studentName: 'Aarav Mehta', companyName: 'Infosys', jobRole: 'Systems Engineer', packageLpa: 6.5, placementType: 'ON_CAMPUS', offerDate: '2025-02-28' },
+          { studentName: 'Sneha Nair', companyName: 'Deloitte', jobRole: 'Business Analyst', packageLpa: 12.0, placementType: 'OFF_CAMPUS', offerDate: '2025-03-05' },
+          { studentName: 'Rohan Das', companyName: 'Wipro', jobRole: 'Project Engineer', packageLpa: 5.8, placementType: 'ON_CAMPUS', offerDate: '2025-02-18' },
+          { studentName: 'Kavya Iyer', companyName: 'Amazon', jobRole: 'SDE-1', packageLpa: 24.0, placementType: 'OFF_CAMPUS', offerDate: '2025-01-30' },
+        ],
+        recentApplications: [
+          { id: 1001, jobId: 42, status: 'OFFERED', aiScore: 91, appliedAt: '2025-03-14T10:22', matchedSkills: 'Java, Spring, SQL' },
+          { id: 1002, jobId: 38, status: 'SHORTLISTED', aiScore: 84, appliedAt: '2025-03-13T14:05', matchedSkills: 'React, Node.js' },
+          { id: 1003, jobId: 55, status: 'PENDING', aiScore: 67, appliedAt: '2025-03-12T09:18', matchedSkills: 'Python, ML' },
+          { id: 1004, jobId: 42, status: 'REJECTED', aiScore: 42, appliedAt: '2025-03-11T16:44', matchedSkills: 'HTML, CSS' },
+          { id: 1005, jobId: 61, status: 'REVIEWED', aiScore: 75, appliedAt: '2025-03-10T11:30', matchedSkills: 'C++, DSA' },
+        ]
+      };
+      renderStats(mock);
+      renderCharts(mock);
+      renderTables(mock);
+      renderTopCompanies(mock.topCompanies);
+    }
+
+    function renderStats(d) {
+      document.getElementById('statStudents').textContent = fmt(d.totalStudents);
+      document.getElementById('statPlaced').textContent = fmt(d.totalPlaced);
+      document.getElementById('statJobs').textContent = d.activeJobs;
+      document.getElementById('statApps').textContent = fmt(d.totalApplications);
+      const pct = ((d.totalPlaced / d.totalStudents) * 100).toFixed(1);
+      document.getElementById('deltaPlaced').innerHTML = `↑ ${pct}% placement rate`;
+      document.getElementById('deltaStudents').innerHTML = `Registered on platform`;
+      document.getElementById('deltaJobs').innerHTML = `Currently active`;
+      document.getElementById('deltaApps').innerHTML = `↑ Across all listings`;
+    }
+
+    let charts = {};
+
+    function renderCharts(d) {
+      // Placement trend (line)
+      if (charts.trend) charts.trend.destroy();
+      charts.trend = new Chart(document.getElementById('placementTrendChart'), {
+        type: 'line',
+        data: {
+          labels: d.placementTrend.labels,
+          datasets: [{
+            label: 'Placements',
+            data: d.placementTrend.data,
+            borderColor: COLORS.indigo,
+            backgroundColor: 'rgba(79,70,229,0.08)',
+            borderWidth: 2.5,
+            pointBackgroundColor: COLORS.indigo,
+            pointRadius: 3,
+            tension: 0.4,
+            fill: true
+          }]
+        },
+        options: { plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'rgba(0,0,0,0.04)' }, beginAtZero: true }, x: { grid: { display: false } } } }
+      });
+
+      // Placement type (doughnut)
+      if (charts.type) charts.type.destroy();
+      const pts = d.placementTypeSplit;
+      charts.type = new Chart(document.getElementById('placementTypeChart'), {
+        type: 'doughnut',
+        data: {
+          labels: ['On Campus', 'Off Campus'],
+          datasets: [{ data: [pts.onCampus, pts.offCampus], backgroundColor: [COLORS.indigo, COLORS.cyan], borderWidth: 0, hoverOffset: 6 }]
+        },
+        options: { cutout: '68%', plugins: { legend: { position: 'bottom', labels: { padding: 16, font: { size: 12 } } } } }
+      });
+
+      // Application status (pie)
+      if (charts.appStatus) charts.appStatus.destroy();
+      const ass = d.applicationStatusSplit;
+      charts.appStatus = new Chart(document.getElementById('appStatusChart'), {
+        type: 'pie',
+        data: {
+          labels: Object.keys(ass),
+          datasets: [{ data: Object.values(ass), backgroundColor: [COLORS.amber, COLORS.sky, COLORS.violet, COLORS.rose, COLORS.emerald], borderWidth: 0, hoverOffset: 5 }]
+        },
+        options: { plugins: { legend: { position: 'bottom', labels: { padding: 12, font: { size: 11 } } } } }
+      });
+
+      // Package distribution (bar)
+      if (charts.pkg) charts.pkg.destroy();
+      charts.pkg = new Chart(document.getElementById('packageChart'), {
+        type: 'bar',
+        data: {
+          labels: d.packageDistribution.labels,
+          datasets: [{
+            label: 'Students',
+            data: d.packageDistribution.data,
+            backgroundColor: PALETTE.slice(0, d.packageDistribution.labels.length).map(c => c + 'cc'),
+            borderRadius: 6, borderSkipped: false
+          }]
+        },
+        options: { plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'rgba(0,0,0,0.04)' }, beginAtZero: true }, x: { grid: { display: false } } } }
+      });
+
+      // Branch placement (horizontal bar)
+      if (charts.branch) charts.branch.destroy();
+      charts.branch = new Chart(document.getElementById('branchChart'), {
+        type: 'bar',
+        data: {
+          labels: d.branchPlacement.labels,
+          datasets: [{
+            label: 'Placements',
+            data: d.branchPlacement.data,
+            backgroundColor: COLORS.cyan + 'bb',
+            borderRadius: 5, borderSkipped: false
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          plugins: { legend: { display: false } },
+          scales: { x: { grid: { color: 'rgba(0,0,0,0.04)' }, beginAtZero: true }, y: { grid: { display: false } } }
+        }
+      });
+
+      // Job categories (polar area)
+      if (charts.jobCat) charts.jobCat.destroy();
+      charts.jobCat = new Chart(document.getElementById('jobCategoryChart'), {
+        type: 'polarArea',
+        data: {
+          labels: d.jobCategories.labels,
+          datasets: [{
+            data: d.jobCategories.data,
+            backgroundColor: PALETTE.map(c => c + '99'),
+            borderWidth: 0
+          }]
+        },
+        options: { plugins: { legend: { position: 'right', labels: { padding: 14, font: { size: 12 } } } }, scales: { r: { grid: { color: 'rgba(0,0,0,0.06)' }, ticks: { display: false } } } }
+      });
+    }
+
+    function renderTopCompanies(companies) {
+      if (!companies.length) return;
+      const max = companies[0].placements;
+      const list = document.getElementById('topCompaniesList');
+      list.innerHTML = companies.map(c => `
+        <div class="company-row">
+          <div class="company-avatar">${initials(c.name)}</div>
+          <div class="company-info">
+            <div class="name">${c.name}</div>
+            <div class="count">${c.placements} placements</div>
+          </div>
+          <div class="company-bar-wrap"><div class="company-bar" style="width:${(c.placements/max*100).toFixed(0)}%"></div></div>
+        </div>`).join('');
+    }
+
+    function renderTables(d) {
+      // Placements
+      const pb = document.getElementById('recentPlacementsBody');
+      if (d.recentPlacements && d.recentPlacements.length) {
+        pb.innerHTML = d.recentPlacements.map(p => `
+          <tr>
+            <td><strong>${p.studentName}</strong></td>
+            <td>${p.companyName}</td>
+            <td>${p.jobRole}</td>
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--emerald);">₹${p.packageLpa} LPA</span></td>
+            <td><span class="status-badge ${p.placementType === 'ON_CAMPUS' ? 'status-applied' : 'status-pending'}">${p.placementType.replace('_',' ')}</span></td>
+            <td style="color:var(--text-muted)">${p.offerDate}</td>
+          </tr>`).join('');
+      } else {
+        pb.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px;">No recent placements</td></tr>`;
+      }
+
+      // Applications
+      const ab = document.getElementById('recentApplicationsBody');
+      if (d.recentApplications && d.recentApplications.length) {
+        ab.innerHTML = d.recentApplications.map(a => {
+          const sc = a.aiScore >= 80 ? COLORS.emerald : a.aiScore >= 60 ? COLORS.amber : COLORS.rose;
+          const statusClass = { PENDING: 'status-pending', OFFERED: 'status-placed', SHORTLISTED: 'status-applied', REVIEWED: 'status-pending', REJECTED: '' }[a.status] || '';
+          return `<tr>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:12px;">#${a.id}</td>
+            <td>Job #${a.jobId}</td>
+            <td><span class="status-badge ${statusClass}" style="${!statusClass?'background:rgba(0,0,0,0.05);color:var(--text-muted);border:none':''}">${a.status}</span></td>
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:${sc}">${a.aiScore}</span></td>
+            <td style="color:var(--text-muted)">${new Date(a.appliedAt).toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'})}</td>
+            <td style="font-size:12px;color:var(--text-muted)">${a.matchedSkills}</td>
+          </tr>`;
+        }).join('');
+      } else {
+        ab.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px;">No recent applications</td></tr>`;
+      }
+    }
+
+    // ── AI Insights via Ollama Mistral ──
+    async function generateAIInsights() {
+      const btn = document.getElementById('aiGenerateBtn');
+      const container = document.getElementById('aiInsightsContainer');
+      btn.disabled = true;
+      btn.textContent = 'Generating...';
+      container.innerHTML = `<div class="ai-loading"><div class="spinner"></div> Asking Mistral to analyze your placement data...</div>`;
+
+      // Gather stats from rendered page
+      const stats = {
+        totalStudents: document.getElementById('statStudents').textContent,
+        totalPlaced: document.getElementById('statPlaced').textContent,
+        activeJobs: document.getElementById('statJobs').textContent,
+        totalApplications: document.getElementById('statApps').textContent
+      };
+
+      const prompt = `You are an expert placement coordinator AI assistant. Analyze the following university placement statistics and provide 4 specific, actionable insights in JSON format.
+
+  Data:
+  - Total students registered: ${stats.totalStudents}
+  - Students placed: ${stats.totalPlaced}
+  - Active job postings: ${stats.activeJobs}
+  - Total applications: ${stats.totalApplications}
+
+  Respond ONLY with a JSON array of 4 objects, each with "icon" (one emoji), "title" (short title), and "text" (1-2 sentence insight). Focus on: placement rate analysis, application-to-offer ratio, recommendations for improvement, and trends to watch. No markdown, no extra text.`;
+
+      try {
+        const res = await fetch(`${OLLAMA_API}/api/generate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ model: 'mistral', prompt, stream: false })
+        });
+        const data = await res.json();
+        const raw = data.response.replace(/```json|```/g, '').trim();
+        const insights = JSON.parse(raw);
+        renderAIInsights(insights);
+      } catch (err) {
+        console.warn('Ollama unavailable, using mock insights', err);
+        renderAIInsights([
+          { icon: '📈', title: 'Strong Placement Rate', text: 'Your placement rate is above 59%, which is commendable. Consider targeting companies with higher packages to improve the overall average LPA.' },
+          { icon: '⚡', title: 'Application Funnel Needs Attention', text: 'With 3,192 applications for 38 jobs, the acceptance rate is low. Consider running mock interview sessions to improve student readiness.' },
+          { icon: '🎯', title: 'CSE Dominance', text: 'CSE and IT branches account for over 65% of placements. Initiate targeted drives for core engineering and MBA branches to balance placement numbers.' },
+          { icon: '🏆', title: 'Off-Campus Drive Opportunity', text: 'Off-campus placements represent only ~21% of total. Encouraging students to apply to startups and product-based companies could significantly increase this number.' }
+        ]);
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = '✨ Regenerate Insights';
+    }
+
+    function renderAIInsights(insights) {
+      const container = document.getElementById('aiInsightsContainer');
+      container.innerHTML = `<div class="ai-insights-list">${insights.map(i => `
+        <div class="ai-insight-item">
+          <span class="insight-icon">${i.icon}</span>
+          <div><strong>${i.title}:</strong> ${i.text}</div>
+        </div>`).join('')}</div>`;
+    }
+
+    // ── Boot ──
+    loadDashboard();
+</script>
+</body>
+</html>

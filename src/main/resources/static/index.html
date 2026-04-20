@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Naukrisathi- Launch Your Career</title>
+    <!-- PlacementPro Typography Base -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            /* PlacementPro Color Palette */
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --border: rgba(15, 23, 42, 0.08); /* Soft dark border */
+            --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+            --secondary-gradient: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+            --card-bg: rgba(255, 255, 255, 0.5); /* Exactly matches homepage transparent cards */
+            --card-bg-hover: rgba(255, 255, 255, 0.8);
+            --white: #ffffff;
+
+            --exhaust-main: #4f46e5;
+            --exhaust-light: #a5b4fc;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: var(--text-main);
+            overflow: hidden; /* Prevents jumping */
+
+            /* PlacementPro Signature Mesh Background */
+            background-color: #f8fafc;
+            background-image:
+              radial-gradient(at 0% 0%, hsla(253, 100%, 94%, 1) 0, transparent 50%),
+              radial-gradient(at 50% 0%, hsla(225, 100%, 95%, 1) 0, transparent 50%),
+              radial-gradient(at 100% 0%, hsla(339, 100%, 94%, 1) 0, transparent 50%),
+              radial-gradient(at 0% 100%, hsla(186, 100%, 92%, 1) 0, transparent 50%),
+              radial-gradient(at 50% 100%, hsla(210, 100%, 94%, 1) 0, transparent 50%),
+              radial-gradient(at 100% 100%, hsla(40, 100%, 92%, 1) 0, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        .container {
+            height: 100vh;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+        }
+
+        .section {
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* ----- Section 1: Hero / Rocket Section ----- */
+        #launch-section {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mock-header {
+            position: absolute;
+            top: 30px;
+            left: 0;
+            width: 100%;
+            padding: 0 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+            z-index: 50;
+        }
+
+        .mock-logo {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            color: var(--text-main);
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Magical Floating Stars Background */
+        .star-field {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1; pointer-events: none;
+        }
+
+        .magic-star {
+            position: absolute; background: rgba(255,255,255,0.8);
+            border-radius: 50%; box-shadow: 0 0 10px rgba(255,255,255,0.5);
+            animation: floatParticle linear infinite, twinkleParticle ease-in-out infinite alternate;
+        }
+
+        @keyframes floatParticle { 100% { transform: translateY(-50px) rotate(360deg); } }
+        @keyframes twinkleParticle { 0% { opacity: 0.1; transform: scale(0.6); } 100% { opacity: 1; transform: scale(1.4); } }
+
+        /* Ambient White Clouds with "Breathing" Animations */
+        .env-clouds {
+            position: absolute; bottom: -5%; left: 0;
+            width: 100%; height: 50vh; z-index: 10;
+        }
+
+        .cloud { position: absolute; background: rgba(255, 255, 255, 0.6); border-radius: 50%; filter: blur(8px); }
+        @keyframes floatCloud { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+
+        .c1 { width: 45vw; height: 45vw; bottom: -20vw; left: -10vw; background: rgba(255,255,255,0.9); animation: floatCloud 8s ease-in-out infinite; }
+        .c2 { width: 40vw; height: 40vw; bottom: -15vw; right: -5vw; background: rgba(255,255,255,0.9); animation: floatCloud 10s ease-in-out infinite 1s; }
+        .c3 { width: 55vw; height: 55vw; bottom: -30vw; left: 20vw; background: #ffffff; animation: floatCloud 12s ease-in-out infinite 2s; }
+        .c4 { width: 25vw; height: 25vw; bottom: 0vw; left: 10vw; opacity: 0.8; animation: floatCloud 9s ease-in-out infinite 0.5s; }
+        .c5 { width: 30vw; height: 30vw; bottom: 5vw; right: 15vw; opacity: 0.8; animation: floatCloud 11s ease-in-out infinite 1.5s; }
+
+        /* Elegant Exhaust Layer */
+        .exhaust-layer {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 100%;
+            z-index: 5; display: flex; justify-content: center; align-items: flex-end;
+        }
+
+        .pink-exhaust { position: absolute; opacity: 0; transform-origin: bottom center; transform: scaleY(0); }
+
+        .pe-left {
+            width: 45vw; height: 65vh; bottom: -10vh; left: 15vw; border-radius: 50% 50% 20% 20%;
+            transform-origin: bottom right; background: radial-gradient(circle at top, #06b6d4 0%, #a5f3fc 60%, transparent 100%);
+            animation: eruptLeft 2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards 0.8s;
+        }
+
+        .pe-right {
+            width: 45vw; height: 60vh; bottom: -10vh; right: 15vw; border-radius: 50% 50% 20% 20%;
+            transform-origin: bottom left; background: radial-gradient(circle at top, #4f46e5 0%, #c7d2fe 60%, transparent 100%);
+            animation: eruptRight 2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards 0.9s;
+        }
+
+        .pe-center {
+            width: 30vw; height: 80vh; bottom: 0; left: 35vw; border-radius: 50% 50% 0 0;
+            background: linear-gradient(to top, var(--exhaust-main), transparent);
+            animation: eruptCenter 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards 0.5s;
+        }
+
+        @keyframes eruptLeft { 0% { opacity: 0; transform: scaleY(0.2) scaleX(0.5) rotate(20deg); } 100% { opacity: 0.6; transform: scaleY(1) scaleX(1) rotate(0deg); } }
+        @keyframes eruptRight { 0% { opacity: 0; transform: scaleY(0.2) scaleX(0.5) rotate(-20deg); } 100% { opacity: 0.5; transform: scaleY(1) scaleX(1) rotate(0deg); } }
+        @keyframes eruptCenter { 0% { opacity: 0; transform: scaleY(0); } 100% { opacity: 0.3; transform: scaleY(1); } }
+
+        /* Rocket */
+        .rocket-obj {
+            position: absolute; bottom: -100px; left: 50%; transform: translateX(-50%) rotate(-45deg);
+            z-index: 15; color: #4f46e5; font-size: 2.5rem;
+            animation: flyToTop 2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards 0.5s, floatRocket 3s ease-in-out infinite 2.5s;
+        }
+
+        @keyframes flyToTop { 0% { bottom: -100px; transform: translateX(-50%) rotate(-45deg) scale(0.8); } 100% { bottom: 78vh; transform: translateX(-50%) rotate(-45deg) scale(1.1); } }
+        @keyframes floatRocket { 0%, 100% { bottom: 78vh; } 50% { bottom: 81vh; } }
+
+        /* Hero Text */
+        .hero-content {
+            z-index: 20; text-align: center; max-width: 900px; padding: 0 20px; margin-top: -10vh;
+            opacity: 0; transform: translateY(40px);
+            animation: textReveal 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards 2.5s;
+        }
+
+        .subtext-top { font-size: 18px; font-weight: 500; color: var(--text-muted); margin-bottom: 24px; letter-spacing: -0.01em; }
+
+        h1 {
+            font-size: 64px; font-weight: 800; line-height: 1.1; letter-spacing: -0.04em; margin-bottom: 0;
+            background: linear-gradient(135deg, #0f172a 0%, #475569 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        @keyframes textReveal { 0% { opacity: 0; transform: translateY(40px); } 100% { opacity: 1; transform: translateY(0); } }
+
+        /* ----- Section 2: Split Informational & Login Layout ----- */
+        #login-section {
+            display: flex; align-items: center; justify-content: center;
+            padding: 40px; /* Reduced to guarantee it securely fits 100vh on all basic laptop resolutions */
+            background: transparent; box-sizing: border-box; position: relative;
+        }
+
+        /* Abstract floating orbs */
+        .ambient-orb {
+            position: absolute; border-radius: 50%; filter: blur(60px); z-index: 0;
+            animation: orbWander 15s infinite alternate ease-in-out; opacity: 0.6;
+        }
+        .orb-1 { width: 500px; height: 500px; background: rgba(79, 70, 229, 0.15); top: -10%; left: -5%; }
+        .orb-2 { width: 600px; height: 600px; background: rgba(6, 182, 212, 0.15); bottom: -15%; right: -5%; animation-delay: -5s; }
+        .orb-3 { width: 300px; height: 300px; background: rgba(16, 185, 129, 0.1); top: 30%; left: 40%; animation-delay: -2s; }
+
+        @keyframes orbWander { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(80px, -60px) scale(1.1); } }
+
+        .login-layout {
+            display: flex; max-width: 1200px; width: 100%; gap: 80px; align-items: center;
+            opacity: 0; transform: translateY(40px);
+            transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 10;
+        }
+
+        .login-layout.visible { opacity: 1; transform: translateY(0); }
+
+        /* Portal Info (Left Side) */
+        .portal-info {
+            flex: 1; padding-right: 20px;
+            display: flex; flex-direction: column; align-items: flex-start; /* Ensures everything precisely left-aligns */
+        }
+
+        .badge {
+            display: flex; align-items: center; justify-content: center;
+            padding: 8px 16px; background: rgba(79, 70, 229, 0.08); color: #4f46e5;
+            font-size: 13px; font-weight: 700; text-transform: uppercase;
+            border-radius: 30px; margin-bottom: 24px; letter-spacing: 0.1em;
+            border: 1px solid rgba(79, 70, 229, 0.15);
+            /* Fixed alignment completely */
+            width: fit-content; text-align: left;
+        }
+
+        .badge i { margin-right: 8px; font-size: 14px; }
+
+        .portal-info h2 {
+            font-size: 48px; line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 20px;
+            color: var(--text-main); font-weight: 800; text-align: left;
+        }
+
+        .portal-info p.desc {
+            font-size: 16px; line-height: 1.7; color: var(--text-muted); margin-bottom: 30px; max-width: 500px; text-align: left;
+        }
+
+        .features { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+        .features li { display: flex; align-items: center; font-size: 15px; color: var(--text-main); font-weight: 500; }
+        .features li i {
+            font-size: 20px; margin-right: 14px;
+            background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        /* Interactive Premium Cards (Right Side) matched exactly to Homepage */
+        .cards-column { flex: 1; display: flex; flex-direction: column; gap: 24px; }
+
+        .login-card {
+            /* Now highly transparent as requested, mimicking standard homepage.css layout exactly */
+            background: var(--card-bg);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            display: flex; align-items: center; gap: 24px;
+            text-decoration: none; color: var(--text-main);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.02);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative; overflow: hidden;
+        }
+
+        .login-card:hover {
+            /* Vertical sleek float up over shadow, just like .job-card hover */
+            transform: translateY(-5px);
+            background: var(--card-bg-hover);
+            border-color: rgba(79, 70, 229, 0.3);
+            box-shadow: 0 12px 30px rgba(79, 70, 229, 0.15);
+        }
+
+        .icon-box {
+            width: 70px; height: 70px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; flex-shrink: 0;
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
+            color: #4f46e5; transition: all 0.3s;
+        }
+
+        .admin-card .icon-box {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(79, 70, 229, 0.15) 100%);
+            color: #7c3aed;
+        }
+
+        .login-card:hover .icon-box {
+            background: var(--primary-gradient); color: white;
+            box-shadow: 0 10px 24px rgba(79, 70, 229, 0.2);
+            transform: scale(1.1) rotate(-5deg);
+        }
+
+        .admin-card:hover .icon-box {
+            background: linear-gradient(135deg, #8b5cf6 0%, #4f46e5 100%);
+            box-shadow: 0 10px 24px rgba(139, 92, 246, 0.2);
+        }
+
+        .card-text { flex: 1; position: relative; z-index: 2; margin-right: 10px; }
+        .card-text h3 { font-size: 20px; margin-bottom: 6px; font-weight: 700; color: var(--text-main); letter-spacing: -0.01em;}
+        .card-text p { font-size: 14px; color: var(--text-muted); line-height: 1.5; margin: 0; }
+
+        .card-arrow {
+            font-size: 22px; color: #cbd5e1; transition: all 0.3s;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .login-card:hover .card-arrow {
+            color: #4f46e5; transform: translateX(5px);
+        }
+        .admin-card:hover .card-arrow {
+            color: #7c3aed; transform: translateX(5px);
+        }
+
+        @media (max-width: 1024px) {
+            .login-layout { flex-direction: column; gap: 40px; }
+            .portal-info { padding-right: 0; text-align: center; align-items: center; }
+            .portal-info h2, .portal-info p.desc { text-align: center; }
+            .portal-info p.desc { margin: 0 auto 32px auto; }
+            .features { align-items: center; }
+            h1 { font-size: 48px; }
+            .portal-info h2 { font-size: 40px; }
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 36px; }
+            .subtext-top { font-size: 16px; }
+            .login-card { padding: 24px; flex-direction: column; text-align: center; gap: 16px; }
+            .card-arrow { display: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="main-container">
+
+    <!-- Section 1: Hero / Rocket Section -->
+    <div class="section" id="launch-section">
+
+        <div class="mock-header">
+            <div class="mock-logo">
+                NaukriSathi
+            </div>
+        </div>
+
+        <!-- Magical floating stars/dust in background -->
+        <div class="star-field" id="star-field"></div>
+
+        <i class="fa-solid fa-rocket rocket-obj"></i>
+
+        <div class="exhaust-layer">
+            <div class="pink-exhaust pe-center"></div>
+            <div class="pink-exhaust pe-left"></div>
+            <div class="pink-exhaust pe-right"></div>
+        </div>
+
+        <div class="env-clouds">
+            <div class="cloud c1"></div>
+            <div class="cloud c2"></div>
+            <div class="cloud c3"></div>
+            <div class="cloud c4"></div>
+            <div class="cloud c5"></div>
+        </div>
+
+        <div class="hero-content" id="hero-text">
+            <div class="subtext-top">Build your profile, explore opportunities, and secure your placement with ease.</div>
+            <h1>Launch Your<br>Career Journey</h1>
+        </div>
+
+    </div>
+
+    <!-- Section 2: Split Informational & Login Layout -->
+    <div class="section" id="login-section">
+
+        <!-- Floating blurred orbs filling the background -->
+        <div class="ambient-orb orb-1"></div>
+        <div class="ambient-orb orb-2"></div>
+        <div class="ambient-orb orb-3"></div>
+
+        <div class="login-layout" id="login-layout">
+
+            <!-- Left Column: Rich Text Content (Stats Row Removed to Conserve Height) -->
+            <div class="portal-info">
+                <span class="badge"><i class="fa-solid fa-bolt"></i> Welcome to Naukrisathi</span>
+                <h2>Your Gateway to Top Tech Careers</h2>
+                <p class="desc">Naukrisathi simplifies the university recruitment journey. Whether you're a student building a standout portfolio or an administrator orchestrating a campus drive, we provide the streamlined tools you need to succeed.</p>
+
+
+                <ul class="features">
+                    <li><i class="fa-solid fa-circle-check"></i> Manage and track applications instantly</li>
+                    <li><i class="fa-solid fa-circle-check"></i> Discover opportunities directly from top recruiters</li>
+                    <li><i class="fa-solid fa-circle-check"></i> Real-time analytics and transparent processes</li>
+                </ul>
+            </div>
+
+            <!-- Right Column: Transparent Clean Login Cards -->
+            <div class="cards-column">
+                <a href="login.html" class="login-card">
+                    <div class="icon-box">
+                        <i class="fa-solid fa-user-graduate"></i>
+                    </div>
+                    <div class="card-text">
+                        <h3>Student Portal</h3>
+                        <p>Verify your details, build your portfolio, and track your active job applications.</p>
+                    </div>
+                    <div class="card-arrow">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </div>
+                </a>
+
+                <a href="Adminlogin.html" class="login-card admin-card">
+                    <div class="icon-box">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <div class="card-text">
+                        <h3>Admin Portal</h3>
+                        <p>Manage campus placements, organize student records, and oversee job requisitions.</p>
+                    </div>
+                    <div class="card-arrow">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </div>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // 1. Generate magical background dust / stars dynamically
+    function generateMagicDust() {
+        const container = document.getElementById('star-field');
+        const numStars = 60;
+        for(let i = 0; i < numStars; i++) {
+            const star = document.createElement('div');
+            star.className = 'magic-star';
+            const x = Math.random() * 100;
+            const y = Math.random() * 100;
+            const size = Math.random() * 4 + 1; // 1px to 5px
+            const durX = 10 + Math.random() * 20;
+            const durY = 2 + Math.random() * 4;
+
+            star.style.left = `${x}%`; star.style.top = `${y}%`;
+            star.style.width = `${size}px`; star.style.height = `${size}px`;
+            star.style.animation = `twinkleParticle ${durY}s ease-in-out infinite alternate, floatParticle ${durX}s linear infinite`;
+            container.appendChild(star);
+        }
+    }
+    generateMagicDust();
+
+    // Custom buttery smooth scroll function
+    function smoothScrollTo(element, targetPosition, duration) {
+        const startPosition = element.scrollTop;
+        const distance = targetPosition - startPosition;
+        let startTime = null;
+
+        function animation(currentTime) {
+            if (startTime === null) startTime = currentTime;
+            const timeElapsed = currentTime - startTime;
+            const progress = Math.min(timeElapsed / duration, 1);
+
+            // easeInOutQuart
+            const ease = progress < 0.5
+                ? 8 * progress * progress * progress * progress
+                : 1 - Math.pow(-2 * progress + 2, 4) / 2;
+
+            element.scrollTop = startPosition + distance * ease;
+
+            if (timeElapsed < duration) {
+                requestAnimationFrame(animation);
+            } else {
+                document.body.style.overflow = "auto";
+                document.documentElement.style.overflow = "auto";
+                element.style.overflowY = "auto";
+            }
+        }
+        requestAnimationFrame(animation);
+    }
+
+    // Timeline triggers
+    setTimeout(() => {
+        const container = document.getElementById('main-container');
+
+        // Initiate custom smooth scroll over exactly 1100ms
+        smoothScrollTo(container, window.innerHeight, 1100);
+
+        // Fade in the rich layout right as the screen lands on it
+        setTimeout(() => {
+            document.getElementById('login-layout').classList.add('visible');
+        }, 600);
+
+    }, 4600); // 4.6s trigger
+</script>
+</body>
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Students - Admin PlacementPro</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+        :root { --text-main: #0f172a; --text-muted: #475569; --border: rgba(15, 23, 42, 0.08); --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%); --primary-text: #ffffff; --card-bg: rgba(255, 255, 255, 0.5); }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; color: var(--text-main); line-height: 1.5; font-size: 14px; background-color: #f8fafc; background-image: radial-gradient(at 0% 0%, hsla(253, 100%, 94%, 1) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(225, 100%, 95%, 1) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339, 100%, 94%, 1) 0, transparent 50%), radial-gradient(at 0% 100%, hsla(186, 100%, 92%, 1) 0, transparent 50%), radial-gradient(at 50% 100%, hsla(210, 100%, 94%, 1) 0, transparent 50%), radial-gradient(at 100% 100%, hsla(40, 100%, 92%, 1) 0, transparent 50%); background-attachment: fixed; }
+        h2, h3, h4 { font-weight: 600; color: var(--text-main); }
+        a { text-decoration: none; color: inherit; transition: color 0.2s; }
+        @keyframes fadeUp { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+        .navbar { position: sticky; top: 0; z-index: 50; display: flex; justify-content: space-between; align-items: center; padding: 16px 40px; background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+        .navbar-left .logo { font-size: 18px; font-weight: 700; background: var(--primary-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        .navbar-center { display: flex; gap: 32px; list-style: none; }
+        .navbar-center li { font-size: 14px; color: var(--text-muted); font-weight: 500; }
+        .navbar-center li a { color: var(--text-muted); }
+        .navbar-center li a:hover, .navbar-center li a.active { color: #4f46e5; }
+        .btn-outline { background: rgba(255, 255, 255, 0.9); color: #4f46e5; border: 1px solid rgba(79, 70, 229, 0.4); padding: 8px 16px; border-radius: 6px; font-weight: 500; cursor: pointer; transition: 0.2s; }
+        .btn-outline:hover { background: #f8fafc; border-color: #4f46e5; }
+        .profile-wrapper { max-width: 1100px; margin: 60px auto; padding: 0 20px; animation: fadeUp 0.6s forwards; }
+        .admin-page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+        .admin-page-header h2 { font-size: 24px; }
+        .search-wrapper { position: relative; width: 300px; }
+        .search-wrapper input { width: 100%; padding: 10px 16px 10px 40px; border-radius: 20px; border: 1px solid var(--border); background: rgba(255, 255, 255, 0.6); font-size: 13px; color: #71717a; outline: none; transition: 0.2s; }
+        .search-wrapper input:focus { border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); background: #fff; }
+        .search-wrapper input::placeholder { color: #a1a1aa; }
+        .search-wrapper svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; fill: none; stroke: #a1a1aa; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+        .students-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .student-card { background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 12px; padding: 24px; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04); transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; }
+        .student-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(79, 70, 229, 0.1); }
+        .student-name { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+        .student-email { font-size: 13px; color: var(--text-muted); margin-bottom: 14px; }
+        .student-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+        .info-item { background: rgba(15, 23, 42, 0.03); border-radius: 8px; padding: 8px 12px; }
+        .info-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); font-weight: 600; margin-bottom: 2px; }
+        .info-value { font-size: 13px; font-weight: 500; color: var(--text-main); }
+        .card-actions { display: flex; justify-content: space-between; gap: 10px; margin-top: 4px; }
+        .view-btn { flex: 1; background: var(--primary-gradient); color: white; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; transition: 0.2s; }
+        .view-btn:hover { opacity: 0.85; }
+        .delete-btn { flex: 1; background: rgba(239, 68, 68, 0.08); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; transition: 0.2s; }
+        .delete-btn:hover { background: rgba(239, 68, 68, 0.15); border-color: #ef4444; }
+        .state-msg { text-align: center; color: var(--text-muted); padding: 60px 0; font-size: 15px; grid-column: 1 / -1; }
+        .footer { border-top: 1px solid var(--border); padding: 60px 20px 40px; margin-top: 80px; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(10px); }
+        .footer-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; margin-bottom: 60px; }
+        .footer .logo { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+        .footer p, .footer-links a { color: var(--text-muted); font-size: 14px; }
+        .footer h4 { font-size: 14px; margin-bottom: 20px; font-weight: 600; }
+        .footer-links { display: flex; flex-direction: column; gap: 12px; }
+        .footer-bottom { text-align: center; color: var(--text-muted); border-top: 1px solid var(--border); max-width: 1200px; margin: 0 auto; padding-top: 24px; font-size: 13px; }
+
+  /* ── Toast Notifications ── */
+  #toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+    max-width: 360px;
+    width: calc(100vw - 40px);
+  }
+  .toast {
+    pointer-events: all;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px 14px 14px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(15, 23, 42, 0.09);
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 12px 32px -4px rgba(0,0,0,0.13), 0 0 0 1px rgba(255,255,255,0.6) inset;
+    transform: translateX(110%);
+    opacity: 0;
+    transition: transform 0.38s cubic-bezier(0.34,1.56,0.64,1), opacity 0.25s ease;
+    overflow: hidden;
+    position: relative;
+    min-width: 0;
+  }
+  .toast.show { transform: translateX(0); opacity: 1; }
+  .toast.hide { transform: translateX(110%); opacity: 0; transition: transform 0.28s ease-in, opacity 0.18s ease-in; }
+  .toast-icon { flex-shrink:0; width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:800; }
+  .toast-body { flex:1; min-width:0; }
+  .toast-title { font-size:13px; font-weight:700; letter-spacing:-0.01em; margin-bottom:2px; line-height:1.3; }
+  .toast-msg { font-size:12px; font-weight:400; color:#64748b; line-height:1.5; word-break:break-word; }
+  .toast-close { flex-shrink:0; background:none; border:none; cursor:pointer; color:#94a3b8; padding:2px; line-height:1; font-size:19px; transition:color 0.15s; align-self:flex-start; margin-top:-2px; }
+  .toast-close:hover { color:#475569; }
+  .toast-progress { position:absolute; bottom:0; left:0; height:3px; border-radius:0 0 12px 12px; animation:toastProgress var(--toast-dur,4s) linear forwards; }
+  @keyframes toastProgress { from{width:100%} to{width:0%} }
+  .toast-success .toast-icon { background:#dcfce7; color:#16a34a; }
+  .toast-success .toast-title { color:#15803d; }
+  .toast-success .toast-progress { background:linear-gradient(90deg,#16a34a,#4ade80); }
+  .toast-error   .toast-icon { background:#fee2e2; color:#dc2626; }
+  .toast-error   .toast-title { color:#b91c1c; }
+  .toast-error   .toast-progress { background:linear-gradient(90deg,#dc2626,#f87171); }
+  .toast-warning .toast-icon { background:#fef3c7; color:#d97706; }
+  .toast-warning .toast-title { color:#b45309; }
+  .toast-warning .toast-progress { background:linear-gradient(90deg,#d97706,#fbbf24); }
+  .toast-info    .toast-icon { background:#e0e7ff; color:#4f46e5; }
+  .toast-info    .toast-title { color:#4338ca; }
+  .toast-info    .toast-progress { background:linear-gradient(90deg,#4f46e5,#06b6d4); }
+
+    </style>
+</head>
+<body>
+<div id="toast-container"></div>
+
+
+<nav class="navbar">
+    <div class="navbar-left">
+        <div class="logo">NaukriSathi <span style="font-size:12px;font-weight:500;color:#4f46e5;text-transform:uppercase;margin-left:8px;letter-spacing:1px;">Admin</span></div>
+    </div>
+    <ul class="navbar-center">
+        <li><a href="Dashboard-Admin.html">Dashboard</a></li>
+        <li><a href="AddJobs-Admin.html">Add Job</a></li>
+        <li><a href="ManageJobs-Admin.html">Manage Jobs</a></li>
+        <li><a href="Applications-Admin.html">Applications</a></li>
+        <li><a href="ManageStudents-Admin.html" class="active">Manage Students</a></li>
+        <li><a href="PlacementRecords-Admin.html">Placement Records</a></li>
+    </ul>
+    <div class="navbar-right"><button class="btn-outline signout-btn">Sign Out</button></div>
+</nav>
+
+<div class="profile-wrapper">
+    <div class="admin-page-header">
+        <h2>Manage Students</h2>
+        <div class="search-wrapper">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="searchInput" placeholder="Search by name or email…" oninput="filterStudents()" />
+        </div>
+    </div>
+    <div id="studentsTable" class="students-grid"><p class="state-msg">Loading students…</p></div>
+</div>
+
+<footer class="footer">
+    <div class="footer-content">
+        <div><div class="logo" style="font-size:20px;font-weight:700;color:#0f172a;margin-bottom:16px;">NaukriSathi <span style="font-weight:600;color:#4f46e5;">Admin</span></div><p>Administrator Dashboard providing central controls for recruitment, university analytics, and placement operations.</p></div>
+        <div><h4>Admin Shortcuts</h4><div class="footer-links"><a href="AddJobs-Admin.html">Post New Job</a><a href="ManageJobs-Admin.html">Manage Postings</a><a href="Applications-Admin.html">Review Applications</a></div></div>
+        <div><h4>System &amp; Support</h4><div class="footer-links"><a href="#">Server Status: Online</a><a href="#">Contact IT Support</a><a href="#">Admin Documentation</a></div></div>
+    </div>
+    <div class="footer-bottom">&copy; 2026 PlacementPro Administrator. All rights reserved. Secured internal portal.</div>
+</footer>
+
+<script>
+    if (!localStorage.getItem("adminId")) {
+      toast("Please login first", "warning");
+      setTimeout(()=>{ window.location.href = "AdminLogin.html"; }, 1500);
+    }
+
+    let allStudents = [];
+
+    fetch("http://localhost:8084/admin/students/all")
+      .then(res => res.json())
+      .then(data => {
+        allStudents = data;
+        renderStudents(allStudents);
+      })
+      .catch(() => {
+        document.getElementById("studentsTable").innerHTML = '<p class="state-msg">Failed to load students. Please try again.</p>';
+        toast("Failed to load students. Server may be down.", "error");
+      });
+function renderStudents(students) {
+    const container = document.getElementById("studentsTable");
+    container.innerHTML = "";
+    if (!students.length) { container.innerHTML = '<p class="state-msg">No students found.</p>'; return; }
+    students.forEach(student => {
+        const card = document.createElement("div");
+        card.className = "student-card";
+        card.onclick = () => viewStudent(student.userId);
+        card.innerHTML = `
+            <div class="student-name">${student.name}</div>
+            <div class="student-email">${student.email}</div>
+            <div class="student-info-grid">
+                <div class="info-item"><div class="info-label">Branch</div><div class="info-value">${student.branch || "—"}</div></div>
+                <div class="info-item"><div class="info-label">Year</div><div class="info-value">${student.year || "—"}</div></div>
+                <div class="info-item" style="grid-column: 1 / -1;"><div class="info-label">CGPA</div><div class="info-value">${student.cgpa || "—"}</div></div>
+            </div>
+            <div class="card-actions">
+                <button class="view-btn" onclick="event.stopPropagation(); viewResume(${student.userId})">View Resume</button>
+                <button class="delete-btn" onclick="deleteStudent(${student.userId}); event.stopPropagation();">Delete</button>
+            </div>`;
+        container.appendChild(card);
+    });
+}
+
+    function filterStudents() {
+      const q = document.getElementById("searchInput").value.toLowerCase();
+      const filtered = allStudents.filter(s =>
+        (s.name && s.name.toLowerCase().includes(q)) ||
+        (s.email && s.email.toLowerCase().includes(q))
+      );
+      renderStudents(filtered);
+    }
+
+    function deleteStudent(id) {
+      if (!confirm("Delete this student?")) return;
+      const staffId = localStorage.getItem("staffId");
+      fetch(`http://localhost:8084/admin/students/delete/${id}/${staffId}`, { method: "DELETE" })
+        .then(res => res.text())
+        .then(msg => { toast(msg, "success"); setTimeout(()=>location.reload(), 1500); });
+    }
+
+    function viewStudent(id) { window.location.href = "StudentDetails-Admin.html?userId=" + id; }
+    function viewResume(userId) {
+    fetch("http://localhost:8084/resume/view", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: userId })
+    })
+    .then(res => {
+        if (!res.ok) { toast("Resume not found.", "error"); throw new Error(); }
+        return res.blob();
+    })
+    .then(blob => {
+        const url = URL.createObjectURL(blob);
+        window.open(url); // No userId in address bar
+    })
+    .catch(() => toast("Could not load resume.", "error"));
+}
+
+// ✅ Hide userId from URL — store in sessionStorage instead
+function viewStudent(id) {
+    sessionStorage.setItem("viewStudentId", id);
+    window.location.href = "StudentDetails-Admin.html";
+}
+
+
+</script>
+<script>
+
+    /* ── Toast JS ── */
+    (function(){
+      var ICONS  = {success:'✓', error:'✕', warning:'⚠', info:'ℹ'};
+      var TITLES = {success:'Success', error:'Error', warning:'Warning', info:'Notice'};
+      function dismiss(el){
+        clearTimeout(el._tt);
+        el.classList.remove('show');
+        el.classList.add('hide');
+        setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);}, 320);
+      }
+      window.toast = function(message, type, duration){
+        message = (message||'').toString();
+        if(!type){
+          if(/\u274C|[Ee]rror|[Ff]ail(ed)?|[Ii]nvalid|[Ww]rong|[Dd]en(ied)?|down|[Cc]annot|not run/i.test(message)) type='error';
+          else if(/\u2705|\u1F389|[Ss]uccess(ful)?|[Vv]erif|[Aa]dded|[Ss]aved|[Dd]elet|[Uu]pdat|[Pp]lac|[Cc]reat/i.test(message)) type='success';
+          else if(/\u26A0|[Ww]arn|[Cc]aution/i.test(message)) type='warning';
+          else type='info';
+        }
+        duration = duration || (type==='error' ? 5500 : 4200);
+        var clean = message
+          .replace(/^[\u{274C}\u{2705}\u{26A0}\u{2139}\u{1F389}\u{1F525}\u{1F4A1}\u{1F916}\u{1F4CA}\u{1F9E0}\u{1F680}]+\s*/u,'')
+          .replace(/\n/g,'<br>');
+        var c = document.getElementById('toast-container');
+        if(!c) return;
+        var el = document.createElement('div');
+        el.className = 'toast toast-' + type;
+        el.style.setProperty('--toast-dur', duration+'ms');
+        el.innerHTML =
+          '<div class="toast-icon">'+ICONS[type]+'</div>'+
+          '<div class="toast-body">'+
+            '<div class="toast-title">'+TITLES[type]+'</div>'+
+            '<div class="toast-msg">'+clean+'</div>'+
+          '</div>'+
+          '<button class="toast-close" aria-label="Dismiss">\xd7</button>'+
+          '<div class="toast-progress"></div>';
+        c.appendChild(el);
+        requestAnimationFrame(function(){
+          requestAnimationFrame(function(){ el.classList.add('show'); });
+        });
+        el.querySelector('.toast-close').addEventListener('click', function(){ dismiss(el); });
+        el._tt = setTimeout(function(){ dismiss(el); }, duration);
+        el.addEventListener('mouseenter', function(){
+          clearTimeout(el._tt);
+          var p=el.querySelector('.toast-progress');
+          if(p) p.style.animationPlayState='paused';
+        });
+        el.addEventListener('mouseleave', function(){
+          var p=el.querySelector('.toast-progress');
+          if(p) p.style.animationPlayState='running';
+          el._tt=setTimeout(function(){ dismiss(el); }, 1800);
+        });
+      };
+    })();
+
+</script>
+</body>
+</html>

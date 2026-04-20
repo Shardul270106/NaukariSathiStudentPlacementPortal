@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Details - PlacementPro</title>
+  <link rel="stylesheet" href="homepage.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-left">
+    <a href="homepage.html"><div class="logo">NaukriSathi</div></a>
+  </div>
+
+  <ul class="navbar-center">
+    <li><a href="homepage.html">Home</a></li>
+    <li><a href="profile.html">Profile</a></li>
+    <li><a href="appliedJobs.html">Jobs</a></li>
+    <li><a href="aiAssistance.html">AI Assistant</a></li>
+  </ul>
+
+  <div class="navbar-right">
+    <button class="btn-outline">Sign Out</button>
+  </div>
+</nav>
+
+<!-- CONTENT -->
+<div class="job-details-wrapper">
+
+  <!-- MAIN CONTENT -->
+  <main class="job-details-main" id="mainJobContent"></main>
+
+  <!-- SIDEBAR -->
+  <aside class="job-details-sidebar" id="sidebarJobContent"></aside>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-content">
+    <div>
+      <div class="logo">PlacementPro</div>
+      <p>Connecting remarkable students with extraordinary career opportunities globally.</p>
+    </div>
+    <div>
+      <h4>Support & Policies</h4>
+      <div class="footer-links">
+        <a href="homepage.html">Home</a>
+        <a href="#">About</a>
+      </div>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <p>+1-123-456-7890</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ✅ YOUR ORIGINAL JS (ONLY UI MAPPING CHANGED, LOGIC SAME) -->
+<script>
+  const jobId = sessionStorage.getItem("selectedJobId");
+if (!jobId) {
+  window.location.href = "homepage.html"; // redirect if accessed directly
+}
+
+  async function loadJob(){
+
+    const response = await fetch(`http://localhost:8084/jobs/${jobId}`);
+    const job = await response.json();
+
+    // ✅ MAIN CONTENT
+    const mainContent = document.getElementById("mainJobContent");
+
+    mainContent.innerHTML = `
+      <div class="job-header-hero">
+        <img src="${job.companyLogo}">
+        <div>
+          <h1>${job.jobTitle}</h1>
+          <p>${job.companyName || ""}</p>
+        </div>
+      </div>
+
+      <div class="job-body-section">
+        <h2>Job Description</h2>
+        <p>${job.jobDescription}</p>
+      </div>
+
+      <div class="job-body-section">
+        <h2>Skills Required</h2>
+        <ul>
+          ${job.skills.split(",").map(skill => `<li>${skill.trim()}</li>`).join("")}
+        </ul>
+      </div>
+
+      <div class="job-body-section">
+        <h2>Selection Process</h2>
+        <ul>
+          <li>Online Coding Assessment</li>
+          <li>Technical Interviews</li>
+          <li>HR Interview</li>
+        </ul>
+      </div>
+    `;
+
+    // ✅ SIDEBAR CONTENT
+    const sidebarContent = document.getElementById("sidebarJobContent");
+
+    sidebarContent.innerHTML = `
+      <div class="sidebar-item">
+        <div class="sidebar-label">Branch</div>
+        <div class="sidebar-value">${job.branch}</div>
+      </div>
+
+      <div class="sidebar-item">
+        <div class="sidebar-label">Year</div>
+        <div class="sidebar-value">${job.year}</div>
+      </div>
+
+      <div class="sidebar-item">
+        <div class="sidebar-label">Minimum CGPA</div>
+        <div class="sidebar-value">${job.cgpa}</div>
+      </div>
+
+      <div class="sidebar-item">
+        <div class="sidebar-label">Salary</div>
+        <div class="sidebar-value">${job.salary}</div>
+      </div>
+
+      <button class="btn-primary apply-massive-btn">
+        Apply Now
+      </button>
+    `;
+  }
+
+  loadJob();
+</script>
+
+</body>
+</html>
+
+
+

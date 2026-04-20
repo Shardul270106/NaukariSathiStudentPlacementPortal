@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Naukrisathi — Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --text-main:  #0f172a;
+      --text-muted: #475569;
+      --border:     rgba(15,23,42,0.08);
+      --border-h:   rgba(15,23,42,0.18);
+      --primary:    linear-gradient(135deg,#4f46e5 0%,#06b6d4 100%);
+      --accent:     #4f46e5;
+      --accent2:    #06b6d4;
+      --card:       rgba(255,255,255,0.55);
+      --error:      #e11d48;
+      --success:    #059669;
+    }
+
+    *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      font-family: 'Inter', -apple-system, sans-serif;
+      color: var(--text-main);
+      font-size: 14px;
+      -webkit-font-smoothing: antialiased;
+      overflow: hidden;
+    }
+
+    body {
+      background-color: #f8fafc;
+      background-image:
+        radial-gradient(at 0%   0%,  hsla(253,100%,94%,1) 0, transparent 50%),
+        radial-gradient(at 50%  0%,  hsla(225,100%,95%,1) 0, transparent 50%),
+        radial-gradient(at 100% 0%,  hsla(339,100%,94%,1) 0, transparent 50%),
+        radial-gradient(at 0%  100%, hsla(186,100%,92%,1) 0, transparent 50%),
+        radial-gradient(at 50% 100%, hsla(210,100%,94%,1) 0, transparent 50%),
+        radial-gradient(at 100%100%, hsla(40, 100%,92%,1) 0, transparent 50%);
+      background-attachment: fixed;
+    }
+
+    .orb { position:fixed; border-radius:50%; filter:blur(80px); pointer-events:none; z-index:0; animation:orbDrift 12s ease-in-out infinite; }
+    .orb1 { width:500px;height:500px;top:-140px;left:-120px; background:radial-gradient(circle,rgba(79,70,229,.18),transparent 70%); }
+    .orb2 { width:400px;height:400px;bottom:-100px;right:-80px; background:radial-gradient(circle,rgba(6,182,212,.18),transparent 70%);animation-delay:-6s; }
+    .orb3 { width:300px;height:300px;top:40%;left:38%; background:radial-gradient(circle,rgba(236,72,153,.10),transparent 70%);animation-delay:-10s; }
+    @keyframes orbDrift { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(28px,-18px) scale(1.05)} 66%{transform:translate(-18px,22px) scale(0.97)} }
+
+    .particles { position:fixed;inset:0;z-index:1;pointer-events:none; }
+    .particle { position:absolute;border-radius:50%;opacity:0;animation:floatUp var(--d) var(--dl) infinite ease-in-out; }
+    @keyframes floatUp { 0%{opacity:0;transform:translateY(0) scale(.4)} 20%{opacity:.5} 80%{opacity:.2} 100%{opacity:0;transform:translateY(-110vh) scale(1)} }
+
+    .scene {
+      position: relative; z-index: 2;
+      display: flex; height: 100vh; width: 100vw;
+      overflow: hidden;
+    }
+
+    .left-panel {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 60px 50px; position: relative; overflow: hidden;
+    }
+
+    .brand { position:absolute;top:36px;left:44px;display:flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;font-weight:800;font-size:20px; }
+    .brand-mark { width:34px;height:34px;border-radius:9px;background:var(--primary);display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;font-weight:800;box-shadow:0 4px 14px rgba(79,70,229,.35); }
+    .brand-name { background:var(--primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
+
+    .glow-line { position:absolute;height:1px;left:0;right:0;background:linear-gradient(90deg,transparent,rgba(79,70,229,.2),transparent);animation:glowPulse 4s ease-in-out infinite; }
+    .glow-line:nth-child(2){top:28%;animation-delay:0s} .glow-line:nth-child(3){bottom:28%;animation-delay:-2s}
+    @keyframes glowPulse { 0%,100%{opacity:.25;transform:scaleX(.5)} 50%{opacity:.7;transform:scaleX(1)} }
+
+    .illo-wrap { width:400px;height:280px;perspective:900px;position:relative;animation:floatBob 6s ease-in-out infinite;margin-bottom:28px; }
+    @keyframes floatBob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-16px)} }
+    .illo-inner { width:100%;height:100%;transform-style:preserve-3d;animation:isoPan 20s ease-in-out infinite; }
+    @keyframes isoPan { 0%,100%{transform:rotateX(18deg) rotateY(-12deg)} 50%{transform:rotateX(16deg) rotateY(12deg)} }
+    .illo-svg { width:100%;height:100%;filter:drop-shadow(0 24px 48px rgba(79,70,229,.18)); }
+
+    .badge { position:absolute;background:rgba(255,255,255,0.75);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--border-h);border-radius:40px;padding:7px 14px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:7px;white-space:nowrap;box-shadow:0 6px 20px rgba(0,0,0,.07);color:var(--text-main); }
+    .badge-dot { width:8px;height:8px;border-radius:50%; }
+    .badge:nth-child(1){top:-8px;left:10px;animation:badgeBob 3.5s ease-in-out infinite}
+    .badge:nth-child(2){bottom:28px;right:0;animation:badgeBob 3.5s ease-in-out infinite;animation-delay:.8s}
+    .badge:nth-child(3){top:45%;left:-30px;animation:badgeBob 3.5s ease-in-out infinite;animation-delay:1.8s}
+    @keyframes badgeBob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
+
+    .tagline { text-align:center;max-width:380px; }
+    .tagline h1 { font-family:'Syne',sans-serif;font-size:32px;font-weight:800;line-height:1.15;margin-bottom:10px;background:linear-gradient(135deg,#0f172a 0%,#4f46e5 60%,#06b6d4 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-0.03em; }
+    .tagline p { font-size:14px;color:var(--text-muted);line-height:1.6; }
+
+    .stat-row { display:flex;gap:12px;margin-top:20px; }
+    .stat-pill { background:rgba(255,255,255,0.6);backdrop-filter:blur(10px);border:1px solid var(--border-h);border-radius:8px;padding:8px 14px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.05); }
+    .stat-pill strong { display:block;font-size:16px;font-family:'Syne',sans-serif;background:var(--primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
+    .stat-pill span { font-size:11px;color:var(--text-muted);font-weight:500; }
+
+    .right-panel {
+      width: 460px; min-width: 400px;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px 36px;
+      border-left: 1px solid var(--border);
+      background: rgba(255,255,255,0.4);
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    }
+
+    .form-box {
+      width: 100%; max-width: 360px;
+      max-height: calc(100vh - 48px);
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(79,70,229,.2) transparent;
+      padding-right: 4px;
+      animation: fadeUp .55s cubic-bezier(.22,1,.36,1) both;
+    }
+    .form-box::-webkit-scrollbar { width: 4px; }
+    .form-box::-webkit-scrollbar-track { background: transparent; }
+    .form-box::-webkit-scrollbar-thumb { background: rgba(79,70,229,.2); border-radius: 2px; }
+    .form-box.login-mode { overflow: hidden; }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+
+    .tab-track { display:flex;background:rgba(15,23,42,.04);border:1px solid var(--border);border-radius:10px;padding:4px;margin-bottom:20px;position:relative; }
+    .tab-pill { position:absolute;top:4px;left:4px;height:calc(100% - 8px);width:calc(50% - 4px);background:var(--primary);border-radius:7px;box-shadow:0 4px 14px rgba(79,70,229,.28);transition:transform .35s cubic-bezier(.34,1.56,.64,1); }
+    .tab-pill.right { transform:translateX(100%); }
+    .tab { flex:1;text-align:center;padding:9px;cursor:pointer;font-weight:600;font-size:13px;color:var(--text-muted);transition:color .2s;border-radius:7px;position:relative;z-index:1;user-select:none; }
+    .tab.active { color:#fff; }
+
+    .form-hd { margin-bottom:16px; }
+    .form-hd h2 { font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:-.03em;margin-bottom:2px;color:var(--text-main); }
+    .form-hd p { font-size:12px;color:var(--text-muted); }
+
+    .fg { margin-bottom:10px; }
+    .fg label { display:block;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:4px; }
+    .iw { position:relative; }
+    .iw svg { position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--text-muted);pointer-events:none;transition:color .2s; }
+    .fg input { width:100%;padding:9px 11px 9px 33px;background:rgba(255,255,255,.7);border:1px solid rgba(15,23,42,0.12);border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;color:var(--text-main);outline:none;transition:border-color .2s,box-shadow .2s,background .2s; }
+    .fg input::placeholder { color:#94a3b8; }
+    .fg input:focus { border-color:var(--accent);background:rgba(79,70,229,.04);box-shadow:0 0 0 3px rgba(79,70,229,.12); }
+    .iw:focus-within svg { color:var(--accent); }
+    .fg input.invalid { border-color:var(--error);box-shadow:0 0 0 3px rgba(225,29,72,.1); }
+    .fg input.valid   { border-color:var(--success); }
+    .f-hint { font-size:10px;color:#94a3b8;margin-top:2px;padding-left:2px; }
+    .f-err  { font-size:10px;color:var(--error);margin-top:2px;padding-left:2px;display:none; }
+
+    .pwd-strength { display:none;margin-top:6px; }
+    .str-bar { height:3px;border-radius:2px;background:rgba(15,23,42,.08);overflow:hidden;margin-bottom:3px; }
+    .str-fill { height:100%;width:0%;border-radius:2px;transition:width .4s cubic-bezier(.34,1.56,.64,1),background .3s; }
+    .str-lbl { font-size:10px;font-weight:700; }
+
+    .pwd-rules { display:none;flex-direction:column;gap:3px;margin-top:6px;background:rgba(255,255,255,.7);border:1px solid var(--border);border-radius:8px;padding:8px 10px; }
+    .pwd-rule { font-size:10px;display:flex;align-items:center;gap:6px;color:#94a3b8;transition:color .2s; }
+    .pwd-rule.met { color:var(--success); }
+    .pwd-rule::before { content:'○';font-size:9px; }
+    .pwd-rule.met::before { content:'●'; }
+
+    #sfWrap {
+      display: grid;
+      grid-template-rows: 0fr;
+      opacity: 0;
+      transition: grid-template-rows .42s cubic-bezier(.4,0,.2,1), opacity .3s ease;
+    }
+    #sfWrap.open { grid-template-rows: 1fr; opacity: 1; }
+    #sfInner { overflow: hidden; }
+
+    .fields-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+    .fields-grid .fg { margin-bottom: 10px; }
+    .fields-grid .fg.full { grid-column: 1 / -1; }
+
+    .terms-row { display:flex;align-items:center;gap:8px;margin:10px 0 0;font-size:11px;color:var(--text-muted); }
+    .terms-row input[type="checkbox"] { width:14px;height:14px;flex-shrink:0;accent-color:var(--accent);cursor:pointer; }
+    .terms-row a { color:var(--accent);font-weight:500;text-decoration:none; }
+
+    #otpSection { display:none;flex-direction:column;gap:7px;margin-top:5px; }
+    #otpInput { letter-spacing:.35em;font-size:17px;font-weight:700;text-align:center;padding-left:12px; }
+
+    .btn-primary { width:100%;padding:11px;background:var(--primary);border:none;border-radius:8px;color:#fff;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(79,70,229,.32);transition:transform .15s,box-shadow .2s,opacity .2s;margin-top:12px;position:relative;overflow:hidden; }
+    .btn-primary::after { content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent);opacity:0;transition:opacity .2s; }
+    .btn-primary:hover { transform:translateY(-2px);box-shadow:0 8px 24px rgba(79,70,229,.42); }
+    .btn-primary:hover::after { opacity:1; }
+    .btn-primary:active { transform:translateY(0); }
+    .btn-primary.loading { opacity:.7;pointer-events:none; }
+
+    .btn-sec { width:100%;padding:10px;background:rgba(255,255,255,.8);border:1px solid var(--border-h);border-radius:8px;color:var(--accent);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:border-color .2s,background .2s;margin-top:4px; }
+    .btn-sec:hover { border-color:var(--accent);background:rgba(79,70,229,.05); }
+
+    .spin { display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spinA .7s linear infinite;vertical-align:middle;margin-right:6px; }
+    @keyframes spinA { to{transform:rotate(360deg)} }
+
+    @media(max-width:860px) {
+      .left-panel { display:none; }
+      .right-panel { width:100%;min-width:unset;border:none; }
+    }
+
+  /* ── Toast Notifications ── */
+  #toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+    max-width: 360px;
+    width: calc(100vw - 40px);
+  }
+  .toast {
+    pointer-events: all;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px 14px 14px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(15, 23, 42, 0.09);
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 12px 32px -4px rgba(0,0,0,0.13), 0 0 0 1px rgba(255,255,255,0.6) inset;
+    transform: translateX(110%);
+    opacity: 0;
+    transition: transform 0.38s cubic-bezier(0.34,1.56,0.64,1), opacity 0.25s ease;
+    overflow: hidden;
+    position: relative;
+    min-width: 0;
+  }
+  .toast.show { transform: translateX(0); opacity: 1; }
+  .toast.hide { transform: translateX(110%); opacity: 0; transition: transform 0.28s ease-in, opacity 0.18s ease-in; }
+  .toast-icon { flex-shrink:0; width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:800; }
+  .toast-body { flex:1; min-width:0; }
+  .toast-title { font-size:13px; font-weight:700; letter-spacing:-0.01em; margin-bottom:2px; line-height:1.3; }
+  .toast-msg { font-size:12px; font-weight:400; color:#64748b; line-height:1.5; word-break:break-word; }
+  .toast-close { flex-shrink:0; background:none; border:none; cursor:pointer; color:#94a3b8; padding:2px; line-height:1; font-size:19px; transition:color 0.15s; align-self:flex-start; margin-top:-2px; }
+  .toast-close:hover { color:#475569; }
+  .toast-progress { position:absolute; bottom:0; left:0; height:3px; border-radius:0 0 12px 12px; animation:toastProgress var(--toast-dur,4s) linear forwards; }
+  @keyframes toastProgress { from{width:100%} to{width:0%} }
+  .toast-success .toast-icon { background:#dcfce7; color:#16a34a; }
+  .toast-success .toast-title { color:#15803d; }
+  .toast-success .toast-progress { background:linear-gradient(90deg,#16a34a,#4ade80); }
+  .toast-error   .toast-icon { background:#fee2e2; color:#dc2626; }
+  .toast-error   .toast-title { color:#b91c1c; }
+  .toast-error   .toast-progress { background:linear-gradient(90deg,#dc2626,#f87171); }
+  .toast-warning .toast-icon { background:#fef3c7; color:#d97706; }
+  .toast-warning .toast-title { color:#b45309; }
+  .toast-warning .toast-progress { background:linear-gradient(90deg,#d97706,#fbbf24); }
+  .toast-info    .toast-icon { background:#e0e7ff; color:#4f46e5; }
+  .toast-info    .toast-title { color:#4338ca; }
+  .toast-info    .toast-progress { background:linear-gradient(90deg,#4f46e5,#06b6d4); }
+
+  </style>
+</head>
+<body>
+<div id="toast-container"></div>
+
+
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+<div class="particles" id="pts"></div>
+
+<div class="scene">
+
+  <div class="left-panel">
+    <div class="glow-line"></div>
+    <div class="glow-line"></div>
+
+    <div class="brand">
+      <div class="brand-mark">N</div>
+      <span class="brand-name">NaukriSathi
+</span>
+    </div>
+
+    <div class="illo-wrap">
+      <div class="badge"><span class="badge-dot" style="background:#10b981"></span><span id="badge-companies">— Companies</span></div>
+      <div class="badge"><span class="badge-dot" style="background:#4f46e5"></span><span id="badge-placement">— Placement Rate</span></div>
+      <div class="badge"><span class="badge-dot" style="background:#f43f5e"></span><span id="badge-jobs">Live Offers 🔥</span></div>
+      <div class="illo-inner">
+        <svg class="illo-svg" viewBox="0 0 420 340" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="gDesk" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e0e7ff"/><stop offset="100%" stop-color="#c7d2fe"/></linearGradient>
+            <linearGradient id="gMon" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#4f46e5"/><stop offset="100%" stop-color="#06b6d4"/></linearGradient>
+            <linearGradient id="gScreen" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0f172a"/><stop offset="100%" stop-color="#1e293b"/></linearGradient>
+            <linearGradient id="gFloor" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e2e8f0"/><stop offset="100%" stop-color="#cbd5e1"/></linearGradient>
+            <radialGradient id="gGlow" cx="50%" cy="80%" r="50%"><stop offset="0%" stop-color="rgba(79,70,229,0.12)"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+            <filter id="fShadow"><feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="rgba(79,70,229,0.18)"/></filter>
+          </defs>
+          <ellipse cx="210" cy="296" rx="176" ry="36" fill="url(#gFloor)" opacity=".6"/>
+          <ellipse cx="210" cy="296" rx="176" ry="36" fill="url(#gGlow)"/>
+          <path d="M80 238 L210 172 L340 238 L210 304 Z" fill="url(#gDesk)" filter="url(#fShadow)"/>
+          <path d="M210 304 L340 238 L340 255 L210 321 Z" fill="#a5b4fc" opacity=".7"/>
+          <path d="M80 238 L210 304 L210 321 L80 255 Z" fill="#818cf8" opacity=".5"/>
+          <rect x="200" y="148" width="20" height="20" rx="3" fill="#6366f1" opacity=".8"/>
+          <rect x="188" y="165" width="44" height="5" rx="2" fill="#4f46e5" opacity=".7"/>
+          <rect x="140" y="80" width="140" height="78" rx="9" fill="url(#gMon)" filter="url(#fShadow)"/>
+          <rect x="145" y="85" width="130" height="68" rx="6" fill="url(#gScreen)"/>
+          <rect x="154" y="99" width="10" height="38" rx="2" fill="#4f46e5" opacity=".9"/>
+          <rect x="168" y="108" width="10" height="29" rx="2" fill="#818cf8" opacity=".8"/>
+          <rect x="182" y="103" width="10" height="34" rx="2" fill="#4f46e5" opacity=".85"/>
+          <rect x="196" y="93"  width="10" height="44" rx="2" fill="#06b6d4" opacity=".9"/>
+          <rect x="210" y="106" width="10" height="31" rx="2" fill="#4f46e5" opacity=".8"/>
+          <rect x="224" y="100" width="10" height="37" rx="2" fill="#f43f5e" opacity=".8"/>
+          <rect x="238" y="104" width="12" height="33" rx="2" fill="#10b981" opacity=".85"/>
+          <rect x="140" y="80" width="140" height="78" rx="9" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+          <rect x="292" y="52" width="72" height="40" rx="7" fill="rgba(255,255,255,0.92)" stroke="rgba(79,70,229,.2)" stroke-width="1"/>
+          <text x="302" y="68" font-family="Inter" font-size="8" fill="#475569">Placed Today</text>
+          <text x="302" y="82" font-family="Inter" font-size="13" font-weight="700" fill="#10b981">↑ 94%</text>
+          <rect x="58" y="66" width="70" height="40" rx="7" fill="rgba(255,255,255,0.92)" stroke="rgba(6,182,212,.2)" stroke-width="1"/>
+          <text x="67" y="82" font-family="Inter" font-size="8" fill="#475569">New Jobs</text>
+          <text x="67" y="97" font-family="Inter" font-size="13" font-weight="700" fill="#4f46e5">+248</text>
+          <rect x="245" y="148" width="86" height="28" rx="14" fill="#10b981"/>
+          <text x="288" y="167" font-family="Inter" font-size="9" font-weight="600" fill="#fff" text-anchor="middle">🎉 Offer Received!</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="tagline">
+      <h1>Launch Your Career<br/>with Confidence</h1>
+      <p>Connect with top recruiters, manage applications,<br/>and track placement opportunities — all in one place.</p>
+      <div class="stat-row">
+        <div class="stat-pill">
+          <strong id="stat-recruiters">—</strong>
+          <span>Recruiters</span>
+        </div>
+        <div class="stat-pill">
+          <strong id="stat-placement">—</strong>
+          <span>Placement Rate</span>
+        </div>
+        <div class="stat-pill">
+          <strong id="stat-package">—</strong>
+          <span>Avg Package</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="right-panel">
+    <div class="form-box login-mode" id="formBox">
+
+      <div class="tab-track">
+        <div class="tab-pill" id="tabPill"></div>
+        <div class="tab active" id="loginTab" role="tab" tabindex="0"
+             onclick="showTab('Login')"
+             onkeydown="if(event.key==='Enter'||event.key===' ')showTab('Login')">Login</div>
+        <div class="tab" id="signupTab" role="tab" tabindex="0"
+             onclick="showTab('SignUp')"
+             onkeydown="if(event.key==='Enter'||event.key===' ')showTab('SignUp')">Sign Up</div>
+      </div>
+
+      <div class="form-hd">
+        <h2 id="formTitle">Welcome back 👋</h2>
+        <p  id="formSub">Sign in to access your placement portal</p>
+      </div>
+
+      <form id="loginForm" novalidate>
+
+        <div id="sfWrap">
+          <div id="sfInner">
+            <div class="fields-grid">
+
+              <div class="fg">
+                <label>Full Name</label>
+                <div class="iw">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                  <input type="text" id="name" placeholder="Jane Smith"/>
+                </div>
+              </div>
+
+              <div class="fg">
+                <label>College ID</label>
+                <div class="iw">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 4v16M16 4v16"/></svg>
+                  <input type="text" id="college-id" placeholder="CS2024001"/>
+                </div>
+              </div>
+
+              <div class="fg full">
+                <label>MU Enrollment No.</label>
+                <div class="iw">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+                  <input type="text" id="mu-enroll-no" placeholder="MU0341120240199116" maxlength="20" oninput="validateMU(this)"/>
+                </div>
+                <div class="f-hint">Format: MU + exactly 16 digits</div>
+                <div class="f-err" id="mu-error">Must start with "MU" followed by 16 digits.</div>
+              </div>
+
+              <div class="fg">
+                <label>ABC ID</label>
+                <div class="iw">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+                  <input type="text" id="abc-id" placeholder="578785817252" maxlength="14" oninput="validateABC(this)"/>
+                </div>
+                <div class="f-hint">12-digit numeric ID</div>
+                <div class="f-err" id="abc-error">Must be exactly 12 digits.</div>
+              </div>
+
+              <div class="fg">
+                <label>Contact No.</label>
+                <div class="iw">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2A19.79 19.79 0 013.09 4.18 2 2 0 015 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L9.09 9.91a16 16 0 006.99 7l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 17z"/></svg>
+                  <input type="tel" id="contact" placeholder="9876543210" maxlength="10" oninput="this.value=this.value.replace(/\D/g,'')"/>
+                </div>
+              </div>
+
+              <div class="fg full">
+                <label>Email</label>
+                <div class="iw">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>
+                  <input type="email" id="email" placeholder="jane@university.edu"/>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="fg">
+          <label>Username</label>
+          <div class="iw">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            <input type="text" id="username" placeholder="your_username" required/>
+          </div>
+        </div>
+
+        <div class="fg">
+          <label>Password</label>
+          <div class="iw">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            <input type="password" id="password" placeholder="••••••••" required oninput="checkPassword(this)"/>
+          </div>
+          <div class="pwd-strength" id="strengthMeter">
+            <div class="str-bar"><div class="str-fill" id="strengthFill"></div></div>
+            <span class="str-lbl" id="strengthLabel"></span>
+          </div>
+          <div class="pwd-rules" id="pwdRules">
+            <div class="pwd-rule" id="rule-len">At least 8 characters</div>
+            <div class="pwd-rule" id="rule-upper">One uppercase letter (A–Z)</div>
+            <div class="pwd-rule" id="rule-lower">One lowercase letter (a–z)</div>
+            <div class="pwd-rule" id="rule-digit">One digit (0–9)</div>
+            <div class="pwd-rule" id="rule-special">One special character (!@#$…)</div>
+          </div>
+        </div>
+
+        <div class="terms-row">
+          <input type="checkbox" id="termsCheckbox" required/>
+          <label for="termsCheckbox">I agree to the <a href="#">Terms &amp; Privacy Policy</a></label>
+        </div>
+
+        <div id="otpSection">
+          <div class="fg" style="margin-top:4px">
+            <label>One-Time Password</label>
+            <div class="iw">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <input type="text" id="otpInput" placeholder="000000" maxlength="6"/>
+            </div>
+          </div>
+          <button type="button" id="verifyOtpBtn" class="btn-sec">Verify OTP →</button>
+        </div>
+
+        <button id="submitBtn" type="submit" class="btn-primary">Login →</button>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function(){
+    const c=document.getElementById('pts');
+    const cols=['#4f46e5','#06b6d4','#f43f5e','#10b981','#8b5cf6','#f59e0b'];
+    for(let i=0;i<30;i++){
+      const p=document.createElement('div');p.className='particle';
+      const s=Math.random()*4+2;
+      p.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;bottom:${Math.random()*15}%;background:${cols[Math.floor(Math.random()*cols.length)]};--d:${7+Math.random()*9}s;--dl:${Math.random()*8}s;`;
+      c.appendChild(p);
+    }
+  })();
+
+  const MU_REGEX  = /^MU\d{16}$/;
+  const ABC_REGEX = /^\d{12}$/;
+  const PWD_RULES = {
+    len:     {re:/.{8,}/,                                     id:'rule-len'    },
+    upper:   {re:/[A-Z]/,                                     id:'rule-upper'  },
+    lower:   {re:/[a-z]/,                                     id:'rule-lower'  },
+    digit:   {re:/\d/,                                        id:'rule-digit'  },
+    special: {re:/[!@#$%^&*()\-_=+\[\]{};':"\\|,.<>\/?`~]/,  id:'rule-special'}
+  };
+
+  let currentTab = 'Login';
+
+  function showTab(tab){
+    currentTab = tab;
+    const isSignup = tab === 'SignUp';
+    document.getElementById('tabPill').classList.toggle('right', isSignup);
+    document.getElementById('loginTab').classList.toggle('active', !isSignup);
+    document.getElementById('signupTab').classList.toggle('active',  isSignup);
+    document.getElementById('formTitle').textContent = isSignup ? 'Create Account ✨' : 'Welcome back 👋';
+    document.getElementById('formSub').textContent   = isSignup ? 'Fill in your details to get started' : 'Sign in to access your placement portal';
+    document.getElementById('submitBtn').textContent = isSignup ? 'Create Account →' : 'Login →';
+    document.getElementById('sfWrap').classList.toggle('open', isSignup);
+    document.getElementById('strengthMeter').style.display = isSignup ? 'block' : 'none';
+    document.getElementById('pwdRules').style.display      = isSignup ? 'flex'  : 'none';
+    document.getElementById('password').className = '';
+    document.getElementById('otpSection').style.display = 'none';
+    document.getElementById('submitBtn').style.display  = 'block';
+    document.getElementById('otpInput').value = '';
+    const fb = document.getElementById('formBox');
+    if(isSignup){ fb.classList.remove('login-mode'); } else { fb.classList.add('login-mode'); fb.scrollTop = 0; }
+  }
+
+  function validateMU(input){
+    const v=input.value.trim(),err=document.getElementById('mu-error');
+    if(!v){input.className='';err.style.display='none';return}
+    const ok=MU_REGEX.test(v);
+    input.className=ok?'valid':'invalid';
+    err.style.display=ok?'none':'block';
+  }
+
+  function validateABC(input){
+    input.value=input.value.replace(/\D/g,'');
+    const v=input.value.trim(),err=document.getElementById('abc-error');
+    if(!v){input.className='';err.style.display='none';return}
+    const ok=ABC_REGEX.test(v);
+    input.className=ok?'valid':'invalid';
+    err.style.display=ok?'none':'block';
+  }
+
+  function checkPassword(input){
+    if(currentTab!=='SignUp')return;
+    const val=input.value;let score=0;
+    for(const [,r] of Object.entries(PWD_RULES)){
+      const met=r.re.test(val);
+      document.getElementById(r.id).classList.toggle('met',met);
+      if(met)score++;
+    }
+    const fill=document.getElementById('strengthFill');
+    const lbl =document.getElementById('strengthLabel');
+    fill.style.width=(score/5*100)+'%';
+    const lvls=['','Very Weak','Weak','Fair','Strong','Very Strong'];
+    const clrs=['','#e11d48','#f97316','#eab308','#22c55e','#059669'];
+    fill.style.background=clrs[score];
+    lbl.textContent=lvls[score];lbl.style.color=clrs[score];
+    input.className=score===5?'valid':(val?'invalid':'');
+  }
+
+  function isPasswordValid(p){return Object.values(PWD_RULES).every(r=>r.re.test(p))}
+
+  function setLoading(btn,on,label){
+    if(on){btn.classList.add('loading');btn.innerHTML=`<span class="spin"></span>${label}`}
+    else  {btn.classList.remove('loading');btn.textContent=label+' →'}
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    const btn=document.getElementById('submitBtn');
+    if(currentTab==='SignUp'){
+      const muVal =document.getElementById('mu-enroll-no').value.trim();
+      const abcVal=document.getElementById('abc-id').value.trim();
+      const pwdVal=document.getElementById('password').value;
+      if(!MU_REGEX.test(muVal)){toast('Invalid MU Enrollment Number. Format: MU followed by 16 digits','error');return}
+      if(!ABC_REGEX.test(abcVal)){toast('Invalid ABC ID. Must be exactly 12 digits','error');return}
+      if(!isPasswordValid(pwdVal)){toast('Password does not meet all requirements.','error');return}
+      const user={name:document.getElementById('name').value,collegeid:document.getElementById('college-id').value,muenrollmentid:muVal,abcid:abcVal,email:document.getElementById('email').value,contact:document.getElementById('contact').value,username:document.getElementById('username').value,password:pwdVal};
+      setLoading(btn,true,'Creating Account…');
+      try{
+        const res=await fetch('http://localhost:8084/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(user)});
+        const text=await res.text();
+        toast(text);
+        if(text.toLowerCase().includes('otp')){
+          document.getElementById('otpSection').style.display='flex';
+          document.getElementById('submitBtn').style.display='none';
+        }
+      }catch(err){toast('Server not running. Please try again.','error');console.error(err)}
+      finally{setLoading(btn,false,'Create Account')}
+    }else{
+      const loginData={username:document.getElementById('username').value,password:document.getElementById('password').value};
+      setLoading(btn,true,'Signing In…');
+      try{
+        const res=await fetch('http://localhost:8084/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(loginData)});
+        const data=await res.json();
+        if(data.status==='Login success'){
+          localStorage.setItem('userId',data.userId);
+          localStorage.setItem('username',data.username);
+          toast('Login successful! Redirecting…','success');
+          setTimeout(()=>{ window.location.href='homepage.html'; }, 1200);
+        }else{toast(data.status,'error')}
+      }catch(err){toast('Server not running. Please try again.','error');console.error(err)}
+      finally{setLoading(btn,false,'Login')}
+    }
+  });
+
+  document.getElementById('verifyOtpBtn').addEventListener('click', async function(){
+    const username=document.getElementById('username').value;
+    const otp=document.getElementById('otpInput').value;
+    this.textContent='Verifying…';
+    try{
+      const res=await fetch('http://localhost:8084/verify-otp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,otp})});
+      const text=await res.text();
+      if(text.trim()==='ACCOUNT_DELETED'){
+        toast('Too many wrong attempts. Please register again.','error');
+        document.getElementById('otpSection').style.display='none';
+        document.getElementById('loginForm').reset();
+        showTab('SignUp');
+      } else if(text.includes('Invalid OTP')){
+        toast(text,'error');
+      } else if(text.includes('Successfully')){
+        toast('Email Verified Successfully!','success');
+        document.getElementById('otpSection').style.display='none';
+        document.getElementById('submitBtn').style.display='block';
+        showTab('Login');
+      } else {
+        toast(text);
+      }
+    }catch(err){toast('Error verifying OTP. Please try again.','error');console.error(err)}
+    finally{this.textContent='Verify OTP →'}
+  });
+</script>
+<script>
+
+  /* ── Toast JS ── */
+  (function(){
+    var ICONS  = {success:'✓', error:'✕', warning:'⚠', info:'ℹ'};
+    var TITLES = {success:'Success', error:'Error', warning:'Warning', info:'Notice'};
+    function dismiss(el){
+      clearTimeout(el._tt);
+      el.classList.remove('show');
+      el.classList.add('hide');
+      setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);}, 320);
+    }
+    window.toast = function(message, type, duration){
+      message = (message||'').toString();
+      if(!type){
+        if(/\u274C|[Ee]rror|[Ff]ail(ed)?|[Ii]nvalid|[Ww]rong|[Dd]en(ied)?|down|[Cc]annot|not run/i.test(message)) type='error';
+        else if(/\u2705|\u1F389|[Ss]uccess(ful)?|[Vv]erif|[Aa]dded|[Ss]aved|[Dd]elet|[Uu]pdat|[Pp]lac|[Cc]reat/i.test(message)) type='success';
+        else if(/\u26A0|[Ww]arn|[Cc]aution/i.test(message)) type='warning';
+        else type='info';
+      }
+      duration = duration || (type==='error' ? 5500 : 4200);
+      var clean = message
+        .replace(/^[\u{274C}\u{2705}\u{26A0}\u{2139}\u{1F389}\u{1F525}\u{1F4A1}\u{1F916}\u{1F4CA}\u{1F9E0}\u{1F680}]+\s*/u,'')
+        .replace(/\n/g,'<br>');
+      var c = document.getElementById('toast-container');
+      if(!c) return;
+      var el = document.createElement('div');
+      el.className = 'toast toast-' + type;
+      el.style.setProperty('--toast-dur', duration+'ms');
+      el.innerHTML =
+        '<div class="toast-icon">'+ICONS[type]+'</div>'+
+        '<div class="toast-body">'+
+          '<div class="toast-title">'+TITLES[type]+'</div>'+
+          '<div class="toast-msg">'+clean+'</div>'+
+        '</div>'+
+        '<button class="toast-close" aria-label="Dismiss">\xd7</button>'+
+        '<div class="toast-progress"></div>';
+      c.appendChild(el);
+      requestAnimationFrame(function(){
+        requestAnimationFrame(function(){ el.classList.add('show'); });
+      });
+      el.querySelector('.toast-close').addEventListener('click', function(){ dismiss(el); });
+      el._tt = setTimeout(function(){ dismiss(el); }, duration);
+      el.addEventListener('mouseenter', function(){
+        clearTimeout(el._tt);
+        var p=el.querySelector('.toast-progress');
+        if(p) p.style.animationPlayState='paused';
+      });
+      el.addEventListener('mouseleave', function(){
+        var p=el.querySelector('.toast-progress');
+        if(p) p.style.animationPlayState='running';
+        el._tt=setTimeout(function(){ dismiss(el); }, 1800);
+      });
+    };
+  })();
+</script>
+
+<script>
+  (async function loadStats() {
+    try {
+      const res = await fetch('http://localhost:8084/stats');
+      if (!res.ok) throw new Error();
+      const d = await res.json();
+
+      // stat pills
+      document.getElementById('stat-recruiters').textContent =
+        d.recruiters > 0 ? d.recruiters + '+' : '1,200+';
+      document.getElementById('stat-placement').textContent =
+        d.placementRate > 0 ? Math.round(d.placementRate) + '%' : '98%';
+      document.getElementById('stat-package').textContent =
+        d.avgPackage > 0 ? '₹' + Math.round(d.avgPackage) + 'L' : '₹24L';
+
+      // floating badges
+      document.getElementById('badge-companies').textContent =
+        (d.recruiters > 0 ? d.recruiters + '+' : '1,200+') + ' Companies';
+      document.getElementById('badge-placement').textContent =
+        (d.placementRate > 0 ? Math.round(d.placementRate) + '%' : '98%') + ' Placement Rate';
+
+    } catch (e) {
+      // fallbacks
+      document.getElementById('stat-recruiters').textContent = '1,200+';
+      document.getElementById('stat-placement').textContent  = '98%';
+      document.getElementById('stat-package').textContent    = '₹24L';
+
+      document.getElementById('badge-companies').textContent = '1,200+ Companies';
+      document.getElementById('badge-placement').textContent = '98% Placement Rate';
+    }
+  })();
+</script>
+</body>
+</html>

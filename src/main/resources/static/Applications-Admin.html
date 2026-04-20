@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Applications - Admin PlacementPro</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+        :root {
+          --text-main: #0f172a;
+          --text-muted: #475569;
+          --border: rgba(15, 23, 42, 0.08);
+          --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+          --primary-text: #ffffff;
+          --card-bg: rgba(255, 255, 255, 0.5);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+          font-family: 'Inter', sans-serif;
+          color: var(--text-main);
+          line-height: 1.5;
+          font-size: 14px;
+          background-color: #f8fafc;
+          background-image:
+            radial-gradient(at 0% 0%, hsla(253, 100%, 94%, 1) 0, transparent 50%),
+            radial-gradient(at 50% 0%, hsla(225, 100%, 95%, 1) 0, transparent 50%),
+            radial-gradient(at 100% 0%, hsla(339, 100%, 94%, 1) 0, transparent 50%),
+            radial-gradient(at 0% 100%, hsla(186, 100%, 92%, 1) 0, transparent 50%),
+            radial-gradient(at 50% 100%, hsla(210, 100%, 94%, 1) 0, transparent 50%),
+            radial-gradient(at 100% 100%, hsla(40, 100%, 92%, 1) 0, transparent 50%);
+          background-attachment: fixed;
+        }
+
+        h2, h3, h4 { font-weight: 600; color: var(--text-main); }
+        a { text-decoration: none; color: inherit; transition: color 0.2s; }
+
+        @keyframes fadeUp {
+          0% { opacity: 0; transform: translateY(20px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* NAVBAR */
+        .navbar {
+          position: sticky; top: 0; z-index: 50;
+          display: flex; justify-content: space-between; align-items: center;
+          padding: 16px 40px;
+          background: rgba(255, 255, 255, 0.3);
+          backdrop-filter: blur(20px);
+          border-bottom: 1px solid var(--border);
+        }
+        .navbar-left .logo {
+          font-size: 18px; font-weight: 700;
+          background: var(--primary-gradient);
+          -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .navbar-center { display: flex; gap: 32px; list-style: none; }
+        .navbar-center li a { font-size: 14px; color: var(--text-muted); font-weight: 500; }
+        .navbar-center li a:hover, .navbar-center li a.active { color: #4f46e5; }
+        .btn-outline {
+          background: rgba(255, 255, 255, 0.9); color: #4f46e5;
+          border: 1px solid rgba(79, 70, 229, 0.4); padding: 8px 16px;
+          border-radius: 6px; font-weight: 500; cursor: pointer; transition: 0.2s;
+        }
+        .btn-outline:hover { background: #f8fafc; border-color: #4f46e5; }
+
+        /* MAIN WRAPPER */
+        .profile-wrapper {
+          max-width: 1200px; margin: 60px auto; padding: 0 20px;
+          animation: fadeUp 0.6s forwards;
+        }
+
+        .admin-page-header {
+          display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px;
+        }
+        .admin-page-header h2 { font-size: 24px; }
+
+        /* SEARCH BAR */
+        .search-wrapper { position: relative; width: 280px; }
+        .search-wrapper input {
+          width: 100%; padding: 10px 16px 10px 40px;
+          border-radius: 20px; border: 1px solid var(--border);
+          background: rgba(255, 255, 255, 0.6); font-size: 13px; color: #71717a;
+          outline: none; transition: 0.2s; display: none;
+        }
+        .search-wrapper input.visible { display: block; }
+        .search-wrapper input:focus {
+          border-color: #4f46e5;
+          box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+          background: #fff;
+        }
+        .search-wrapper input::placeholder { color: #a1a1aa; }
+        .search-wrapper svg {
+          position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+          width: 16px; height: 16px; fill: none; stroke: #a1a1aa;
+          stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; pointer-events: none;
+        }
+
+        /* LAYOUT */
+        .applications-container { display: flex; gap: 24px; align-items: flex-start; }
+
+        /* JOBS PANEL */
+        .jobs-section { width: 34%; display: flex; flex-direction: column; gap: 14px; }
+
+        .job-card {
+          background: var(--card-bg);
+          backdrop-filter: blur(20px);
+          border: 1px solid var(--border);
+          border-radius: 12px;
+          padding: 20px;
+          cursor: pointer;
+          transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+        }
+        .job-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79,70,229,0.08); }
+        .job-card.active { border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
+        .job-card h3 { font-size: 15px; margin-bottom: 4px; }
+        .job-card p { font-size: 13px; color: var(--text-muted); margin-bottom: 14px; }
+
+        .job-stats {
+          width: 100%; border-collapse: collapse; font-size: 12px; text-align: center;
+          border-radius: 8px; overflow: hidden;
+        }
+        .job-stats th {
+          background: rgba(79, 70, 229, 0.08); color: #4f46e5;
+          padding: 5px 8px; font-weight: 600; font-size: 10px;
+          text-transform: uppercase; letter-spacing: 0.4px;
+        }
+        .job-stats td {
+          padding: 5px 8px; border-top: 1px solid var(--border);
+          font-weight: 600; font-size: 13px;
+        }
+
+        /* STUDENTS PANEL */
+        .students-section { width: 66%; display: flex; flex-direction: column; gap: 14px; }
+
+        .student-card {
+          background: var(--card-bg);
+          backdrop-filter: blur(20px);
+          border: 1px solid var(--border);
+          border-radius: 12px;
+          padding: 20px 24px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 16px;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+          transition: box-shadow 0.2s;
+        }
+        .student-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+
+        /* Top candidate highlight */
+        .student-card.top-candidate {
+          border-left: 3px solid #f59e0b;
+          background: rgba(255, 248, 225, 0.6);
+        }
+
+        .student-info h4 { font-size: 15px; margin-bottom: 6px; }
+
+        .match-score {
+          font-size: 13px; font-weight: 600; margin-bottom: 4px;
+        }
+        .match-score.high { color: #059669; }
+        .match-score.good { color: #16a34a; }
+        .match-score.avg  { color: #d97706; }
+        .match-score.low  { color: #dc2626; }
+
+        .skill-line {
+          font-size: 12px; color: var(--text-muted); margin-top: 3px;
+        }
+        .skill-line span.missing { color: #dc2626; }
+
+        /* ACTION BUTTONS */
+        .student-actions { display: flex; gap: 8px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+
+        .resume-btn {
+          background: rgba(15,23,42,0.05); color: var(--text-main);
+          border: 1px solid var(--border); padding: 7px 14px;
+          border-radius: 7px; cursor: pointer; font-size: 13px;
+          font-weight: 500; transition: 0.2s;
+        }
+        .resume-btn:hover { background: rgba(15,23,42,0.1); }
+
+        .accept-btn {
+          background: rgba(16,185,129,0.1); color: #059669;
+          border: 1px solid rgba(16,185,129,0.2);
+          padding: 7px 14px; border-radius: 7px;
+          cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.2s;
+        }
+        .accept-btn:hover { background: rgba(16,185,129,0.2); }
+        .accept-btn.done { background: rgba(16,185,129,0.15); border-color: #059669; }
+
+        .reject-btn {
+          background: rgba(239,68,68,0.08); color: #dc2626;
+          border: 1px solid rgba(239,68,68,0.2);
+          padding: 7px 14px; border-radius: 7px;
+          cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.2s;
+        }
+        .reject-btn:hover { background: rgba(239,68,68,0.15); }
+        .reject-btn.done { background: rgba(239,68,68,0.12); border-color: #dc2626; }
+
+        /* EMPTY STATE */
+        .empty-state {
+          color: var(--text-muted); text-align: center;
+          padding: 60px 0; font-size: 14px;
+        }
+
+        /* FOOTER */
+        .footer {
+          border-top: 1px solid var(--border); padding: 60px 20px 40px;
+          margin-top: 80px; background: rgba(255,255,255,0.5); backdrop-filter: blur(10px);
+        }
+        .footer-content {
+          max-width: 1200px; margin: 0 auto;
+          display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; margin-bottom: 60px;
+        }
+        .footer p, .footer-links a { color: var(--text-muted); font-size: 14px; }
+        .footer h4 { font-size: 14px; margin-bottom: 20px; font-weight: 600; }
+        .footer-links { display: flex; flex-direction: column; gap: 12px; }
+        .footer-bottom {
+          text-align: center; color: var(--text-muted);
+          border-top: 1px solid var(--border); max-width: 1200px;
+          margin: 0 auto; padding-top: 24px; font-size: 13px;
+        }
+        .delete-btn {
+  background: rgba(100,100,100,0.08); color: #64748b;
+  border: 1px solid rgba(100,100,100,0.2);
+  padding: 7px 14px; border-radius: 7px;
+  cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.2s;
+}
+.delete-btn:hover { background: rgba(100,100,100,0.15); color: #0f172a; }
+
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="navbar-left">
+        <div class="logo">NaukriSathi <span style="font-size:12px;font-weight:500;color:#4f46e5;text-transform:uppercase;margin-left:8px;letter-spacing:1px;">Admin</span></div>
+    </div>
+    <ul class="navbar-center">
+        <li><a href="Dashboard-Admin.html">Dashboard</a></li>
+        <li><a href="AddJobs-Admin.html">Add Job</a></li>
+        <li><a href="ManageJobs-Admin.html">Manage Jobs</a></li>
+        <li><a href="Applications-Admin.html" class="active">Applications</a></li>
+        <li><a href="ManageStudents-Admin.html">Manage Students</a></li>
+        <li><a href="PlacementRecords-Admin.html">Placement Records</a></li>
+    </ul>
+    <div class="navbar-right">
+        <button class="btn-outline signout-btn">Sign Out</button>
+    </div>
+</nav>
+
+<!-- CONTENT -->
+<div class="profile-wrapper">
+
+    <div class="admin-page-header">
+        <h2>Applications</h2>
+        <div class="search-wrapper">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="searchStudent" placeholder="Search student…" onkeyup="searchStudent()" />
+        </div>
+    </div>
+
+    <div class="applications-container">
+        <div id="jobsSection" class="jobs-section"></div>
+        <div id="studentsList" class="students-section">
+            <p class="empty-state">← Select a job to view applications</p>
+        </div>
+    </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="footer-content">
+        <div>
+            <div style="font-size:20px;font-weight:700;color:#0f172a;margin-bottom:16px;">
+                NaukriSathi <span style="font-weight:600;color:#4f46e5;">Admin</span>
+            </div>
+            <p>Administrator Dashboard providing central controls for recruitment, university analytics, and placement operations.</p>
+        </div>
+        <div>
+            <h4>Admin Shortcuts</h4>
+            <div class="footer-links">
+                <a href="AddJobs-Admin.html">Post New Job</a>
+                <a href="ManageJobs-Admin.html">Manage Postings</a>
+                <a href="Applications-Admin.html">Review Applications</a>
+            </div>
+        </div>
+        <div>
+            <h4>System &amp; Support</h4>
+            <div class="footer-links">
+                <a href="#">Server Status: Online</a>
+                <a href="#">Contact IT Support</a>
+                <a href="#">Admin Documentation</a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        &copy; 2026 PlacementPro Administrator. All rights reserved. Secured internal portal.
+    </div>
+</footer>
+
+<!-- ALL BACKEND LOGIC PRESERVED FROM ORIGINAL -->
+<script>
+
+    let currentJobOpen = null;
+
+    const jobsSection = document.getElementById("jobsSection");
+
+    // Load all jobs — original endpoint preserved
+    fetch("http://localhost:8084/jobs/all")
+      .then(res => res.json())
+      .then(jobs => {
+
+        jobsSection.innerHTML = "";
+
+        jobs.forEach(job => {
+
+          const card = document.createElement("div");
+          card.className = "job-card";
+          card.onclick = () => loadApplications(job.id, card);
+
+          card.innerHTML = `
+            <h3>${job.jobTitle}</h3>
+            <p>${job.companyName}</p>
+            <table class="job-stats">
+              <tr>
+                <th>Total</th>
+                <th>Accepted</th>
+                <th>Rejected</th>
+              </tr>
+              <tr>
+                <td id="total-${job.id}">—</td>
+                <td id="accepted-${job.id}">—</td>
+                <td id="rejected-${job.id}">—</td>
+              </tr>
+            </table>
+          `;
+
+          jobsSection.appendChild(card);
+
+          // Fetch stats per job — original logic preserved
+          fetch("http://localhost:8084/applications/job/" + job.id)
+            .then(r => r.json())
+            .then(apps => {
+              document.getElementById("total-" + job.id).innerText = apps.length;
+              document.getElementById("accepted-" + job.id).innerText = apps.filter(a => a.status === "ACCEPTED").length;
+              document.getElementById("rejected-" + job.id).innerText = apps.filter(a => a.status === "REJECTED").length;
+            });
+
+        });
+
+      })
+      .catch(err => console.error("Error loading jobs:", err));
+
+
+    // Load applications for selected job — original logic preserved
+    function loadApplications(jobId, cardEl) {
+
+      const studentsList = document.getElementById("studentsList");
+      const searchInput  = document.getElementById("searchStudent");
+
+      // Toggle off if same job clicked — original behavior preserved
+      if (currentJobOpen === jobId) {
+        studentsList.innerHTML = '<p class="empty-state">← Select a job to view applications</p>';
+        searchInput.classList.remove("visible");
+        currentJobOpen = null;
+        document.querySelectorAll(".job-card").forEach(c => c.classList.remove("active"));
+        return;
+      }
+
+      currentJobOpen = jobId;
+      searchInput.classList.add("visible");
+      studentsList.innerHTML = '<p class="empty-state">Loading applications…</p>';
+
+      document.querySelectorAll(".job-card").forEach(c => c.classList.remove("active"));
+      if (cardEl) cardEl.classList.add("active");
+
+      fetch("http://localhost:8084/applications/job/" + jobId)
+        .then(res => res.json())
+        .then(applications => {
+
+          studentsList.innerHTML = "";
+
+          if (!applications.length) {
+            studentsList.innerHTML = '<p class="empty-state">No applications for this job yet.</p>';
+            return;
+          }
+
+          // Sort by aiScore descending — original logic preserved
+          applications.sort((a, b) => (b.aiScore || 0) - (a.aiScore || 0));
+
+          applications.forEach(app => {
+
+            const card = document.createElement("div");
+            card.className = "student-card";
+
+            if (app.aiScore >= 90) card.classList.add("top-candidate");
+
+            // Badge logic — original preserved
+            let badge = "";
+            let scoreClass = "low";
+            if      (app.aiScore >= 90) { badge = "⭐ Top Candidate"; scoreClass = "high"; }
+            else if (app.aiScore >= 75) { badge = "🟢 Good Match";    scoreClass = "good"; }
+            else if (app.aiScore >= 50) { badge = "🟡 Average Match"; scoreClass = "avg";  }
+            else                        { badge = "🔴 Low Match";      scoreClass = "low";  }
+
+            const matchedSkills = app.matchedSkills ? JSON.parse(app.matchedSkills).join(", ") : "None";
+            const missingSkills = app.missingSkills ? JSON.parse(app.missingSkills).join(", ") : "None";
+
+            const acceptLabel = app.status === "ACCEPTED" ? "✔ Accepted" : "Accept";
+            const rejectLabel = app.status === "REJECTED" ? "✖ Rejected" : "Reject";
+            const acceptDone  = app.status === "ACCEPTED" ? "done" : "";
+            const rejectDone  = app.status === "REJECTED" ? "done" : "";
+
+            card.innerHTML = `
+              <div class="student-info">
+                <h4>${app.studentName || "Student ID: " + app.userId}</h4>
+                <p class="match-score ${scoreClass}">Match: ${app.aiScore}% &nbsp;${badge}</p>
+                <p class="skill-line">✅ Matching: ${matchedSkills}</p>
+                <p class="skill-line"><span class="missing">❌ Missing: ${missingSkills}</span></p>
+              </div>
+              <div class="student-actions">
+               <button class="resume-btn" onclick="viewResume(${app.userId})">Resume</button>
+                <button class="accept-btn ${acceptDone}" onclick="updateApplication(${app.id}, 'ACCEPTED', this)">${acceptLabel}</button>
+                <button class="reject-btn ${rejectDone}" onclick="updateApplication(${app.id}, 'REJECTED', this)">${rejectLabel}</button>
+                <button class="delete-btn" onclick="deleteApplication(${app.id}, this)">Delete</button>
+              </div>
+            `;
+
+            studentsList.appendChild(card);
+
+          });
+
+        })
+        .catch(err => console.error("Error loading applications:", err));
+
+    }
+
+
+function viewResume(userId) {
+  fetch("http://localhost:8084/resume/view", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId: parseInt(userId) })
+  })
+  .then(res => {
+    if (!res.ok) { alert("Resume not found."); throw new Error(); }
+    return res.blob();
+  })
+  .then(blob => {
+    const url = URL.createObjectURL(blob);
+    window.open(url, "_blank");
+  })
+  .catch(err => console.error(err));
+}
+
+
+    // Search student — original logic preserved
+    function searchStudent() {
+      const input = document.getElementById("searchStudent").value.toLowerCase();
+      document.querySelectorAll(".student-card").forEach(card => {
+        const name = card.querySelector("h4").innerText.toLowerCase();
+        card.style.display = name.includes(input) ? "flex" : "none";
+      });
+    }
+
+
+    // Update application status — original logic preserved
+    function updateApplication(appId, status, button) {
+
+      const parent     = button.parentElement;
+      const acceptBtn  = parent.querySelector(".accept-btn");
+      const rejectBtn  = parent.querySelector(".reject-btn");
+
+      fetch("http://localhost:8084/applications/update-status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ applicationId: appId, status: status })
+      })
+        .then(res => res.text())
+        .then(() => {
+          if (status === "ACCEPTED") {
+            acceptBtn.innerText = "✔ Accepted"; acceptBtn.classList.add("done");
+            rejectBtn.innerText = "Reject";     rejectBtn.classList.remove("done");
+          } else {
+            rejectBtn.innerText = "✖ Rejected"; rejectBtn.classList.add("done");
+            acceptBtn.innerText = "Accept";      acceptBtn.classList.remove("done");
+          }
+        })
+        .catch(err => console.error(err));
+
+    }
+
+    function deleteApplication(appId, button) {
+  if (!confirm("Delete this application?")) return;
+
+  fetch("http://localhost:8084/applications/delete/" + appId, {
+    method: "DELETE"
+  })
+    .then(res => res.text())
+    .then(() => {
+      button.closest(".student-card").remove();
+    })
+    .catch(err => console.error(err));
+}
+
+</script>
+
+</body>
+</html>

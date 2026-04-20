@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <title>Student Profile - Naukrisathi</title>
+    <link rel="stylesheet" href="homepage.css">
+    <style>
+        /* ── Toast Notifications ── */
+        #toast-container {
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          z-index: 99999;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          pointer-events: none;
+          max-width: 360px;
+          width: calc(100vw - 40px);
+        }
+        .toast {
+          pointer-events: all;
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+          padding: 14px 16px 14px 14px;
+          border-radius: 12px;
+          background: rgba(255, 255, 255, 0.96);
+          backdrop-filter: blur(24px);
+          -webkit-backdrop-filter: blur(24px);
+          border: 1px solid rgba(15, 23, 42, 0.09);
+          box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 12px 32px -4px rgba(0,0,0,0.13), 0 0 0 1px rgba(255,255,255,0.6) inset;
+          transform: translateX(110%);
+          opacity: 0;
+          transition: transform 0.38s cubic-bezier(0.34,1.56,0.64,1), opacity 0.25s ease;
+          overflow: hidden;
+          position: relative;
+          min-width: 0;
+        }
+        .toast.show { transform: translateX(0); opacity: 1; }
+        .toast.hide { transform: translateX(110%); opacity: 0; transition: transform 0.28s ease-in, opacity 0.18s ease-in; }
+        .toast-icon { flex-shrink:0; width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:800; }
+        .toast-body { flex:1; min-width:0; }
+        .toast-title { font-size:13px; font-weight:700; letter-spacing:-0.01em; margin-bottom:2px; line-height:1.3; }
+        .toast-msg { font-size:12px; font-weight:400; color:#64748b; line-height:1.5; word-break:break-word; }
+        .toast-close { flex-shrink:0; background:none; border:none; cursor:pointer; color:#94a3b8; padding:2px; line-height:1; font-size:19px; transition:color 0.15s; align-self:flex-start; margin-top:-2px; }
+        .toast-close:hover { color:#475569; }
+        .toast-progress { position:absolute; bottom:0; left:0; height:3px; border-radius:0 0 12px 12px; animation:toastProgress var(--toast-dur,4s) linear forwards; }
+        @keyframes toastProgress { from{width:100%} to{width:0%} }
+        .toast-success .toast-icon { background:#dcfce7; color:#16a34a; }
+        .toast-success .toast-title { color:#15803d; }
+        .toast-success .toast-progress { background:linear-gradient(90deg,#16a34a,#4ade80); }
+        .toast-error   .toast-icon { background:#fee2e2; color:#dc2626; }
+        .toast-error   .toast-title { color:#b91c1c; }
+        .toast-error   .toast-progress { background:linear-gradient(90deg,#dc2626,#f87171); }
+        .toast-warning .toast-icon { background:#fef3c7; color:#d97706; }
+        .toast-warning .toast-title { color:#b45309; }
+        .toast-warning .toast-progress { background:linear-gradient(90deg,#d97706,#fbbf24); }
+        .toast-info    .toast-icon { background:#e0e7ff; color:#4f46e5; }
+        .toast-info    .toast-title { color:#4338ca; }
+        .toast-info    .toast-progress { background:linear-gradient(90deg,#4f46e5,#06b6d4); }
+    </style>
+</head>
+<body>
+<div id="toast-container"></div>
+
+
+<nav class="navbar">
+    <div class="navbar-left">
+        <a href="homepage.html" style="text-decoration: none; color: inherit;"><div class="logo">NaukriSathi </div></a>
+    </div>
+    <ul class="navbar-center">
+        <li><a href="homepage.html">Home</a></li>
+        <li><a href="profile.html" class="active">Profile</a></li>
+        <li><a href="appliedJobs.html">Applied Jobs</a></li>
+        <li><a href="aiAssistance.html">Margdarshak AI Assistant</a></li>
+    </ul>
+    <div class="navbar-right">
+        <button class="btn-outline">Sign Out</button>
+    </div>
+</nav>
+
+<div class="profile-wrapper">
+
+    <div class="profile-sidebar" style="animation-delay: 0.1s;">
+        <div class="profile-card avatar-section">
+            <div class="avatar-circle" id="avatarLetter">A</div>
+            <h2 id="avatarName">Abcd Pqrs Wxyz</h2>
+            <p id="avatarBranch">B.Tech Computer Engineering</p>
+        </div>
+        <div class="profile-card">
+            <h3 class="profile-section-title" style="border-bottom: none; margin-bottom: 16px;">Your Resume</h3>
+            <input type="file" id="resumeInput" accept="application/pdf" hidden>
+            <div class="resume-upload-box" onclick="uploadResume()">
+                <p>Drag and drop or click to upload</p>
+                <button class="btn-primary" style="width: 100%; padding: 10px; font-size: 13px;">Add Resume</button>
+            </div>
+            <button class="btn-outline" style="width: 100%; padding: 10px; font-size: 13px;" onclick="viewResume()">View Current Resume</button>
+            <p id="resumeName" style="font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 16px; word-break: break-all;"></p>
+            <div id="successBox" style="display:none; color:#22c55e; font-size:13px; text-align:center; margin-top:10px;">
+                ✅ Resume uploaded & AI processed successfully!
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-main" style="animation-delay: 0.2s;">
+        <div class="profile-card">
+            <h3 class="profile-section-title">Personal Information</h3>
+            <div class="profile-info-grid">
+                <div class="info-item"><span class="info-label">Full Name</span><span class="info-value" id="name"></span></div>
+                <div class="info-item"><span class="info-label">Email Address</span><span class="info-value" id="email"></span></div>
+                <div class="info-item"><span class="info-label">Contact Number</span><span class="info-value" id="contact"></span></div>
+                <div class="info-item" style="grid-column: 1 / -1;"><span class="info-label">Current Address</span><span class="info-value" id="address"></span></div>
+            </div>
+        </div>
+        <div class="profile-card">
+            <h3 class="profile-section-title">Academic Information</h3>
+            <div class="profile-info-grid">
+                <div class="info-item"><span class="info-label">College Name</span><span class="info-value" id="collegeName"></span></div>
+                <div class="info-item"><span class="info-label">College ID</span><span class="info-value" id="collegeId"></span></div>
+                <div class="info-item"><span class="info-label">Branch</span><span class="info-value" id="branch"></span></div>
+                <div class="info-item"><span class="info-label">Preferred Field</span><span class="info-value" id="preferredField"></span></div>
+                <div class="info-item"><span class="info-label">Year</span><span class="info-value" id="year"></span></div>
+                <div class="info-item"><span class="info-label">Semester</span><span class="info-value" id="semester"></span></div>
+                <div class="info-item"><span class="info-label">Current CGPA</span><span class="info-value" style="color: #10b981; font-weight: 700; font-size: 18px;" id="cgpa"></span></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<footer class="footer">
+    <div class="footer-content">
+        <div><div class="logo">Naukrisathi</div><p>Connecting remarkable students with extraordinary career opportunities globally.</p></div>
+        <div><h4>Support & Policies</h4><div class="footer-links"><a href="homepage.html">Home</a><a href="#">About Us</a><a href="#">Privacy Policy</a><a href="#">Terms of Service</a></div></div>
+        <div><h4>Contact Us</h4><div class="footer-links"><p>Email: support@placementpro.com</p><p>Phone: +1-123-456-7890</p></div></div>
+    </div>
+    <div class="footer-bottom">&copy; 2026 Naukrisathi </div>
+</footer>
+
+<div id="aiLoader">
+    <div class="ai-loader-card">
+        <div class="ai-loader-header"><div class="ai-dot"></div><span>AI Processing</span></div>
+        <div class="spinner"></div>
+        <div id="aiMessage">🤖 Analyzing your resume...</div>
+        <div class="progress-bar"><div class="progress-fill"></div></div>
+    </div>
+</div>
+
+<script>
+    const userId = localStorage.getItem("userId");
+    if(!userId){ toast("Please login first!", "warning"); setTimeout(()=>{ window.location.href="login.html"; }, 1500); }
+
+    function uploadResume(){
+      let input=document.getElementById("resumeInput");
+      input.value=""; input.click();
+    }
+
+    const aiMessages = [
+      "🤖 AI is reading your resume...",
+      "🧠 Extracting your skills...",
+      "📊 Analyzing...",
+      "🚀 Optimizing profile..."
+    ];
+    let msgIndex = 0;
+
+    function startAIMessages(){
+      msgIndex=0;
+      const msgElement=document.getElementById("aiMessage");
+      return setInterval(()=>{
+        msgElement.innerText=aiMessages[msgIndex];
+        msgIndex=(msgIndex+1)%aiMessages.length;
+      },2000);
+    }
+
+    document.getElementById("resumeInput").addEventListener("change",function(){
+      let file=this.files[0];
+      if(file.type!=="application/pdf"){ toast("Only PDF files are allowed.", "error"); return; }
+      let formData=new FormData();
+      formData.append("file",file);
+      document.getElementById("aiLoader").style.display="flex";
+      let msgInterval=startAIMessages();
+      fetch("http://localhost:8084/resume/upload/"+userId,{ method:"POST", body:formData })
+      .then(res=>{
+        if(!res.ok){ return res.text().then(text=>{ throw new Error(text); }); }
+        return res.json();
+      })
+      .then(data=>{
+        clearInterval(msgInterval);
+        const loader = document.getElementById("aiLoader");
+        if(loader) loader.style.display="none";
+        const successBox = document.getElementById("successBox");
+        if(successBox){ successBox.style.display="block"; }
+        toast("Resume uploaded & AI processed successfully!", "success");
+        document.getElementById("resumeName").innerText=file.name;
+        document.getElementById("resumeInput").value="";
+        loadProfileData();
+      })
+      .catch(err=>{
+        clearInterval(msgInterval);
+        document.getElementById("aiLoader").style.display="none";
+        toast("Upload failed. Please try again.", "error");
+        console.error(err);
+      });
+    });
+function viewResume() {
+    fetch("http://localhost:8084/resume/view", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: parseInt(userId) })
+    })
+    .then(res => {
+        if (!res.ok) { toast("Resume not found.", "error"); throw new Error(); }
+        return res.blob();
+    })
+    .then(blob => {
+        const url = URL.createObjectURL(blob);
+        window.open(url, "_blank");
+    })
+    .catch(err => {
+        toast("Could not load resume.", "error");
+        console.error(err);
+    });
+}
+    function loadProfileData(){
+      fetch("http://localhost:8084/api/user/"+userId)
+      .then(res=>res.json())
+      .then(data=>{
+        document.getElementById("name").innerText=data.name||"";
+        document.getElementById("email").innerText=data.email||"";
+        document.getElementById("contact").innerText=data.contact||"";
+        document.getElementById("address").innerText=data.address||"";
+        document.getElementById("collegeName").innerText=data.collegeName||"";
+        document.getElementById("collegeId").innerText=data.collegeId||"";
+        document.getElementById("branch").innerText=data.branch||"";
+        document.getElementById("year").innerText=data.year||"";
+        document.getElementById("semester").innerText=data.semester||"";
+        document.getElementById("cgpa").innerText=data.cgpa||"";
+        document.getElementById("preferredField").innerText=data.preferredField||"";
+        const name = data.name || "";
+        document.getElementById("avatarName").innerText = name;
+        document.getElementById("avatarLetter").innerText = name.charAt(0).toUpperCase() || "?";
+        document.getElementById("avatarBranch").innerText = (data.branch ? "B.Tech " + data.branch : "");
+      });
+    }
+
+    loadProfileData();
+</script>
+<script>
+
+    /* ── Toast JS ── */
+    (function(){
+      var ICONS  = {success:'✓', error:'✕', warning:'⚠', info:'ℹ'};
+      var TITLES = {success:'Success', error:'Error', warning:'Warning', info:'Notice'};
+      function dismiss(el){
+        clearTimeout(el._tt);
+        el.classList.remove('show');
+        el.classList.add('hide');
+        setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);}, 320);
+      }
+      window.toast = function(message, type, duration){
+        message = (message||'').toString();
+        if(!type){
+          if(/\u274C|[Ee]rror|[Ff]ail(ed)?|[Ii]nvalid|[Ww]rong|[Dd]en(ied)?|down|[Cc]annot|not run/i.test(message)) type='error';
+          else if(/\u2705|\u1F389|[Ss]uccess(ful)?|[Vv]erif|[Aa]dded|[Ss]aved|[Dd]elet|[Uu]pdat|[Pp]lac|[Cc]reat/i.test(message)) type='success';
+          else if(/\u26A0|[Ww]arn|[Cc]aution/i.test(message)) type='warning';
+          else type='info';
+        }
+        duration = duration || (type==='error' ? 5500 : 4200);
+        var clean = message
+          .replace(/^[\u{274C}\u{2705}\u{26A0}\u{2139}\u{1F389}\u{1F525}\u{1F4A1}\u{1F916}\u{1F4CA}\u{1F9E0}\u{1F680}]+\s*/u,'')
+          .replace(/\n/g,'<br>');
+        var c = document.getElementById('toast-container');
+        if(!c) return;
+        var el = document.createElement('div');
+        el.className = 'toast toast-' + type;
+        el.style.setProperty('--toast-dur', duration+'ms');
+        el.innerHTML =
+          '<div class="toast-icon">'+ICONS[type]+'</div>'+
+          '<div class="toast-body">'+
+            '<div class="toast-title">'+TITLES[type]+'</div>'+
+            '<div class="toast-msg">'+clean+'</div>'+
+          '</div>'+
+          '<button class="toast-close" aria-label="Dismiss">\xd7</button>'+
+          '<div class="toast-progress"></div>';
+        c.appendChild(el);
+        requestAnimationFrame(function(){
+          requestAnimationFrame(function(){ el.classList.add('show'); });
+        });
+        el.querySelector('.toast-close').addEventListener('click', function(){ dismiss(el); });
+        el._tt = setTimeout(function(){ dismiss(el); }, duration);
+        el.addEventListener('mouseenter', function(){
+          clearTimeout(el._tt);
+          var p=el.querySelector('.toast-progress');
+          if(p) p.style.animationPlayState='paused';
+        });
+        el.addEventListener('mouseleave', function(){
+          var p=el.querySelector('.toast-progress');
+          if(p) p.style.animationPlayState='running';
+          el._tt=setTimeout(function(){ dismiss(el); }, 1800);
+        });
+      };
+    })();
+
+</script>
+
+<script src="auth.js"></script>
+</body>
+</html>
