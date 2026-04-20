@@ -451,7 +451,7 @@
             localStorage.setItem('adminId',data.adminId);
             localStorage.setItem('staffId',data.staffId);
             toast('Login successful! Redirecting…','success');
-            setTimeout(function(){window.location.href='Addjobs-Admin.html';},1200);
+            setTimeout(function(){window.location.href='AddJobs-Admin.html';},1200);
           }else{toast(data.status,'error')}
         }catch(err){toast('Server not running. Please try again.','error');console.error(err)}
         finally{setLoading(btn,false,'Login')}
