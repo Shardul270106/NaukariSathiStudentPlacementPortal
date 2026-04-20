@@ -1,11 +1,9 @@
 # ===============================
 # SECRETS - NEVER COMMIT THESE
 # ===============================
-src/main/resources/application.properties
+
 src/main/resources/application-local.properties
-src/main/resources/*.properties
-src/main/resources/*.yml
-src/main/resources/*.yaml
+
 
 # ===============================
 # Maven
