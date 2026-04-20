@@ -1,6 +1,8 @@
 <div align="center">
 
-# 🧳 NaukariSathi
+<img src="assets/Naukarisathi.png" alt="NaukariSathi Logo" width="200"/>
+
+# 🎓 NaukariSathi
 
 ### *Your AI-Powered Job Companion*
 
