@@ -191,7 +191,7 @@
         throw new Error("No student ID");
     }
 
-    fetch("http://localhost:8084/admin/students/" + id)
+    fetch("https://naukarisathistudentplacementportal.onrender.com/admin/students/" + id)
     .then(res => res.json())
     .then(student => {
         const profile = student.studentProfile || {};
@@ -241,7 +241,7 @@
 
     // ✅ POST resume — no ID in address bar
     function viewResume() {
-        fetch("http://localhost:8084/resume/view", {
+        fetch("https://naukarisathistudentplacementportal.onrender.com/resume/view", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ userId: parseInt(id) })

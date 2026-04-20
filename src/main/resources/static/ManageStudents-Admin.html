@@ -155,7 +155,7 @@
 
     let allStudents = [];
 
-    fetch("http://localhost:8084/admin/students/all")
+    fetch("https://naukarisathistudentplacementportal.onrender.com/admin/students/all")
       .then(res => res.json())
       .then(data => {
         allStudents = data;
@@ -201,14 +201,14 @@ function renderStudents(students) {
     function deleteStudent(id) {
       if (!confirm("Delete this student?")) return;
       const staffId = localStorage.getItem("staffId");
-      fetch(`http://localhost:8084/admin/students/delete/${id}/${staffId}`, { method: "DELETE" })
+      fetch(`https://naukarisathistudentplacementportal.onrender.com/admin/students/delete/${id}/${staffId}`, { method: "DELETE" })
         .then(res => res.text())
         .then(msg => { toast(msg, "success"); setTimeout(()=>location.reload(), 1500); });
     }
 
     function viewStudent(id) { window.location.href = "StudentDetails-Admin.html?userId=" + id; }
     function viewResume(userId) {
-    fetch("http://localhost:8084/resume/view", {
+    fetch("https://naukarisathistudentplacementportal.onrender.com/resume/view", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: userId })

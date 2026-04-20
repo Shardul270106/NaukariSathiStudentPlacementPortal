@@ -432,7 +432,7 @@
         var admin={staffId:document.getElementById('staffId').value,name:document.getElementById('name').value,email:document.getElementById('email').value,password:document.getElementById('password').value};
         setLoading(btn,true,'Creating Account…');
         try{
-          var res=await fetch('http://localhost:8084/admin/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(admin)});
+          var res=await fetch('https://naukarisathistudentplacementportal.onrender.com/admin/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(admin)});
           var text=await res.text();
           toast(text);
           if(text.toLowerCase().includes('otp')){
@@ -445,7 +445,7 @@
         var loginData={staffId:document.getElementById('staffId').value,password:document.getElementById('password').value};
         setLoading(btn,true,'Signing In…');
         try{
-          var res=await fetch('http://localhost:8084/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(loginData)});
+          var res=await fetch('https://naukarisathistudentplacementportal.onrender.com/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(loginData)});
           var data=await res.json();
           if(data.status==='Admin login success'){
             localStorage.setItem('adminId',data.adminId);
@@ -464,7 +464,7 @@
       var otp=document.getElementById('otpInput').value;
       this.textContent='Verifying…';
       try{
-        var res=await fetch('http://localhost:8084/admin/verify-otp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({staffId:staffId,otp:otp})});
+        var res=await fetch('https://naukarisathistudentplacementportal.onrender.com/admin/verify-otp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({staffId:staffId,otp:otp})});
         var text=await res.text();
         if(text.trim()==='ACCOUNT_DELETED'){
           toast('Too many wrong attempts. Please register again.','error');
@@ -524,7 +524,7 @@
       result.style.display='none';
 
       try{
-        var res = await fetch('http://localhost:8084/admin/add-staff',{
+        var res = await fetch('https://naukarisathistudentplacementportal.onrender.com/admin/add-staff',{
           method:'POST',
           headers:{'Content-Type':'application/json'},
           body: JSON.stringify({ devPassword, staffId })
@@ -587,7 +587,7 @@
 <script>
     (async function loadStats() {
       try {
-        const res = await fetch('http://localhost:8084/admin/stats');
+        const res = await fetch('https://naukarisathistudentplacementportal.onrender.com/admin/stats');
         if (!res.ok) throw new Error();
         const d = await res.json();
         document.getElementById('stat-staff').textContent = d.staffMembers > 0 ? d.staffMembers : '247';

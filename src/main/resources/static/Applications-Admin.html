@@ -314,7 +314,7 @@
     const jobsSection = document.getElementById("jobsSection");
 
     // Load all jobs — original endpoint preserved
-    fetch("http://localhost:8084/jobs/all")
+    fetch("https://naukarisathistudentplacementportal.onrender.com/jobs/all")
       .then(res => res.json())
       .then(jobs => {
 
@@ -346,7 +346,7 @@
           jobsSection.appendChild(card);
 
           // Fetch stats per job — original logic preserved
-          fetch("http://localhost:8084/applications/job/" + job.id)
+          fetch("https://naukarisathistudentplacementportal.onrender.com/applications/job/" + job.id)
             .then(r => r.json())
             .then(apps => {
               document.getElementById("total-" + job.id).innerText = apps.length;
@@ -382,7 +382,7 @@
       document.querySelectorAll(".job-card").forEach(c => c.classList.remove("active"));
       if (cardEl) cardEl.classList.add("active");
 
-      fetch("http://localhost:8084/applications/job/" + jobId)
+      fetch("https://naukarisathistudentplacementportal.onrender.com/applications/job/" + jobId)
         .then(res => res.json())
         .then(applications => {
 
@@ -445,7 +445,7 @@
 
 
 function viewResume(userId) {
-  fetch("http://localhost:8084/resume/view", {
+  fetch("https://naukarisathistudentplacementportal.onrender.com/resume/view", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ userId: parseInt(userId) })
@@ -479,7 +479,7 @@ function viewResume(userId) {
       const acceptBtn  = parent.querySelector(".accept-btn");
       const rejectBtn  = parent.querySelector(".reject-btn");
 
-      fetch("http://localhost:8084/applications/update-status", {
+      fetch("https://naukarisathistudentplacementportal.onrender.com/applications/update-status", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ applicationId: appId, status: status })
@@ -501,7 +501,7 @@ function viewResume(userId) {
     function deleteApplication(appId, button) {
   if (!confirm("Delete this application?")) return;
 
-  fetch("http://localhost:8084/applications/delete/" + appId, {
+  fetch("https://naukarisathistudentplacementportal.onrender.com/applications/delete/" + appId, {
     method: "DELETE"
   })
     .then(res => res.text())

@@ -562,7 +562,7 @@
       const user={name:document.getElementById('name').value,collegeid:document.getElementById('college-id').value,muenrollmentid:muVal,abcid:abcVal,email:document.getElementById('email').value,contact:document.getElementById('contact').value,username:document.getElementById('username').value,password:pwdVal};
       setLoading(btn,true,'Creating Account…');
       try{
-        const res=await fetch('http://localhost:8084/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(user)});
+        const res=await fetch('https://naukarisathistudentplacementportal.onrender.com/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(user)});
         const text=await res.text();
         toast(text);
         if(text.toLowerCase().includes('otp')){
@@ -575,7 +575,7 @@
       const loginData={username:document.getElementById('username').value,password:document.getElementById('password').value};
       setLoading(btn,true,'Signing In…');
       try{
-        const res=await fetch('http://localhost:8084/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(loginData)});
+        const res=await fetch('https://naukarisathistudentplacementportal.onrender.com/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(loginData)});
         const data=await res.json();
         if(data.status==='Login success'){
           localStorage.setItem('userId',data.userId);
@@ -593,7 +593,7 @@
     const otp=document.getElementById('otpInput').value;
     this.textContent='Verifying…';
     try{
-      const res=await fetch('http://localhost:8084/verify-otp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,otp})});
+      const res=await fetch('https://naukarisathistudentplacementportal.onrender.com/verify-otp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,otp})});
       const text=await res.text();
       if(text.trim()==='ACCOUNT_DELETED'){
         toast('Too many wrong attempts. Please register again.','error');
@@ -674,7 +674,7 @@
 <script>
   (async function loadStats() {
     try {
-      const res = await fetch('http://localhost:8084/stats');
+      const res = await fetch('https://naukarisathistudentplacementportal.onrender.com/stats');
       if (!res.ok) throw new Error();
       const d = await res.json();
 

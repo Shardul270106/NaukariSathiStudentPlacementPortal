@@ -67,7 +67,7 @@ if (!jobId) {
 
   async function loadJob(){
 
-    const response = await fetch(`http://localhost:8084/jobs/${jobId}`);
+    const response = await fetch(`https://naukarisathistudentplacementportal.onrender.com/jobs/${jobId}`);
     const job = await response.json();
 
     // ✅ MAIN CONTENT

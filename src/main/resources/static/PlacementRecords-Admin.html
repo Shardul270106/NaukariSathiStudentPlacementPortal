@@ -164,7 +164,7 @@
             packageLpa:    document.getElementById("packageLpa").value,
             offerDate:     document.getElementById("offerDate").value
         };
-        fetch("http://localhost:8084/placements/add", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(record) })
+        fetch("https://naukarisathistudentplacementportal.onrender.com/placements/add", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(record) })
         .then(res => res.json())
         .then(data => { toast("Placement saved successfully!", "success"); })
         .catch(error => { console.error("Error:", error); toast("Error saving placement. Please try again.", "error"); });

@@ -183,7 +183,7 @@
       formData.append("file",file);
       document.getElementById("aiLoader").style.display="flex";
       let msgInterval=startAIMessages();
-      fetch("http://localhost:8084/resume/upload/"+userId,{ method:"POST", body:formData })
+      fetch("https://naukarisathistudentplacementportal.onrender.com/resume/upload/"+userId,{ method:"POST", body:formData })
       .then(res=>{
         if(!res.ok){ return res.text().then(text=>{ throw new Error(text); }); }
         return res.json();
@@ -207,7 +207,7 @@
       });
     });
 function viewResume() {
-    fetch("http://localhost:8084/resume/view", {
+    fetch("https://naukarisathistudentplacementportal.onrender.com/resume/view", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: parseInt(userId) })
@@ -226,7 +226,7 @@ function viewResume() {
     });
 }
     function loadProfileData(){
-      fetch("http://localhost:8084/api/user/"+userId)
+      fetch("https://naukarisathistudentplacementportal.onrender.com/api/user/"+userId)
       .then(res=>res.json())
       .then(data=>{
         document.getElementById("name").innerText=data.name||"";
