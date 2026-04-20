@@ -2,11 +2,12 @@ package com.spp.demo.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
+import jakarta.persistence.Table;
 import java.time.LocalDate;
 
 @Entity
 @Data
+@Table(name = "placement_records")
 public class PlacementRecord {
 
     @Id

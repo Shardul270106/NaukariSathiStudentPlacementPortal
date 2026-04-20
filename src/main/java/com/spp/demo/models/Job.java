@@ -3,8 +3,9 @@ package com.spp.demo.models;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-
+import jakarta.persistence.Table;
 @Entity
+@Table(name = "jobs")
 public class Job {
 
     @Id
