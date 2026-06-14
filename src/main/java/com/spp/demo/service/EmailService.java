@@ -15,7 +15,7 @@ public class EmailService {
     private String brevoApiKey;
 
     private static final String BREVO_URL = "https://api.brevo.com/v3/smtp/email";
-    private static final String FROM_EMAIL = "aea802001@smtp-brevo.com";
+    private static final String FROM_EMAIL = "studentplacementportal@gmail.com";
     private static final String FROM_NAME = "NaukariSathi Portal";
 
     private void sendEmail(String toEmail, String toName, String subject, String htmlContent) {
@@ -26,6 +26,8 @@ public class EmailService {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.set("api-key", brevoApiKey);
+            System.out.println("Brevo status: " + response.getStatusCode()); // ADD
+System.out.println("Brevo body: " + response.getBody());  
 
             Map<String, Object> body = Map.of(
                 "sender", Map.of("name", FROM_NAME, "email", FROM_EMAIL),
