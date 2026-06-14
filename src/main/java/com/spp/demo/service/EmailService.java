@@ -1,291 +1,131 @@
 package com.spp.demo.service;
 
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-import jakarta.mail.internet.MimeMessage;
+import java.util.Map;
 
 @Service
 public class EmailService {
 
-    @Autowired
-    private JavaMailSender mailSender;
+    @Value("${brevo.api.key}")
+    private String brevoApiKey;
+
+    private static final String BREVO_URL = "https://api.brevo.com/v3/smtp/email";
+    private static final String FROM_EMAIL = "aea802001@smtp-brevo.com";
+    private static final String FROM_NAME = "NaukariSathi Portal";
+
+    private void sendEmail(String toEmail, String toName, String subject, String htmlContent) {
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("api-key", brevoApiKey);
+
+            Map<String, Object> body = Map.of(
+                "sender", Map.of("name", FROM_NAME, "email", FROM_EMAIL),
+                "to", new Object[]{Map.of("email", toEmail, "name", toName)},
+                "subject", subject,
+                "htmlContent", htmlContent
+            );
+
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+            restTemplate.postForEntity(BREVO_URL, request, String.class);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     @Async
     public void sendOtpMail(String toEmail, String name, String otp) {
-
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper =
-                    new MimeMessageHelper(message, true, "UTF-8");
-
-            helper.setTo(toEmail);
-            helper.setSubject("OTP Verification - NaukariSathi -Student Placement Portal 🔐");
-            helper.setFrom("aea802001@smtp-brevo.com");
-
-            String htmlContent =
-                    "<div style='font-family:Arial;text-align:center;padding:20px;'>"
-                            + "<h2>Email Verification Required 🔐</h2>"
-                            + "<p>Hi <b>" + name + "</b>,</p>"
-                            + "<p>Your OTP for email verification is:</p>"
-                            + "<h1 style='color:#2E86C1;font-size:36px;'>"
-                            + otp +
-                            "</h1>"
-                            + "<p>This OTP is valid for <b>5 minutes</b>.</p>"
-                            + "<br>"
-                            + "<small>If you did not register, please ignore this email.</small>"
-                            + "</div>";
-
-            helper.setText(htmlContent, true);
-            mailSender.send(message);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        String html =
+            "<div style='font-family:Arial;text-align:center;padding:20px;'>"
+            + "<h2>Email Verification Required 🔐</h2>"
+            + "<p>Hi <b>" + name + "</b>,</p>"
+            + "<p>Your OTP for email verification is:</p>"
+            + "<h1 style='color:#2E86C1;font-size:36px;'>" + otp + "</h1>"
+            + "<p>This OTP is valid for <b>5 minutes</b>.</p>"
+            + "<small>If you did not register, please ignore this email.</small>"
+            + "</div>";
+        sendEmail(toEmail, name, "OTP Verification - NaukariSathi 🔐", html);
     }
 
-    @Async // non-blocking email
-    public void sendRegistrationMail(String toEmail, String name) {
-
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-
-            MimeMessageHelper helper =
-                    new MimeMessageHelper(message, true, "UTF-8");
-
-            helper.setTo(toEmail);
-            helper.setSubject("Welcome to NaukariSathi -Student Placement Portal 🎓");
-            helper.setFrom("aea802001@smtp-brevo.com");
-
-            String htmlContent =
-                    "<div style='font-family:Arial; text-align:center; padding:20px;'>"
-                            + "<img src='cid:campusLogo' width='120'/><br><br>"
-                            + "<h2>Welcome to the NaukariSathi -Student Placement Portal 🚀</h2>"
-                            + "<p>Hi <b>" + name + "</b>,</p>"
-                            + "<p>Your registration was successful.</p>"
-                            + "<p>You can now:</p>"
-                            + "<ul style='list-style:none;'>"
-                            + "<li>✔ Apply for campus drives</li>"
-                            + "<li>✔ View company postings</li>"
-                            + "<li>✔ Track application status</li>"
-                            + "</ul>"
-                            + "<br>"
-                            + "<a href='http://localhost:8080/login' "
-                            + "style='background:#2E86C1;color:white;"
-                            + "padding:12px 25px;text-decoration:none;"
-                            + "border-radius:6px;'>Login to Portal</a>"
-                            + "<br><br>"
-                            + "<small>Placement Cell<br/>Your College Name</small>"
-                            + "</div>";
-
-            helper.setText(htmlContent, true);
-
-            // Inline logo
-            // Inline logo
-            ClassPathResource logo = new ClassPathResource("static/logo1.png");
-            helper.addInline("campusLogo", logo);
-
-
-            mailSender.send(message);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
     @Async
-    public void sendNewJobNotification(
-            String toEmail,
-            String name,
-            String companyName,
-            String jobTitle,
-            String category,
-            String salary,
-            Double cgpa,
-            String year,
-            String branch,
-            String skills,
-            String description,
-            String logoFile
-    ) {
+    public void sendRegistrationMail(String toEmail, String name) {
+        String html =
+            "<div style='font-family:Arial;text-align:center;padding:20px;'>"
+            + "<h2>Welcome to NaukariSathi 🚀</h2>"
+            + "<p>Hi <b>" + name + "</b>,</p>"
+            + "<p>Your registration was successful.</p>"
+            + "<ul style='list-style:none;'>"
+            + "<li>✔ Apply for campus drives</li>"
+            + "<li>✔ View company postings</li>"
+            + "<li>✔ Track application status</li>"
+            + "</ul>"
+            + "<small>Placement Cell - RGIT</small>"
+            + "</div>";
+        sendEmail(toEmail, name, "Welcome to NaukariSathi 🎓", html);
+    }
 
-        try {
-
-            MimeMessage message = mailSender.createMimeMessage();
-
-            MimeMessageHelper helper =
-                    new MimeMessageHelper(message, true, "UTF-8");
-
-            helper.setTo(toEmail);
-            helper.setSubject("🚀 New Job at " + companyName + " - " + jobTitle);
-            helper.setFrom("aea802001@smtp-brevo.com");
-
-            String htmlContent =
-                    "<div style='font-family:Arial;background:#f4f6f8;padding:20px;'>"
-
-                            + "<div style='max-width:600px;margin:auto;background:white;"
-                            + "padding:25px;border-radius:8px;'>"
-
-                            + "<div style='text-align:center;'>"
-                            + "<img src='logo1.png' width='120'><br><br>"
-                            + "</div>"
-
-                            + "<h2 style='color:#2E86C1;text-align:center;'>New Job Opportunity 🚀</h2>"
-
-                            + "<p>Hi <b>" + name + "</b>,</p>"
-                            + "<p>A new job has been posted on the <b>NaukariSathi -Student Placement Portal</b>.</p>"
-
-                            + "<hr>"
-
-                            + "<h3>📌 Job Details</h3>"
-                            + "<p><b>Company:</b> " + companyName + "</p>"
-                            + "<p><b>Position:</b> " + jobTitle + "</p>"
-                            + "<p><b>Category:</b> " + category + "</p>"
-                            + "<p><b>Salary:</b> " + salary + "</p>"
-
-                            + "<hr>"
-
-                            + "<h3>🎯 Eligibility</h3>"
-                            + "<p><b>Minimum CGPA:</b> " + cgpa + "</p>"
-                            + "<p><b>Year:</b> " + year + "</p>"
-                            + "<p><b>Branch:</b> " + branch + "</p>"
-                            + "<p><b>Skills:</b> " + skills + "</p>"
-
-                            + "<hr>"
-
-                            + "<h3>📝 Job Description</h3>"
-                            + "<p>" + description + "</p>"
-
-                            + "<br>"
-
-                            + "<div style='text-align:center;'>"
-                            + "<a href='http://localhost:5500/Jobs.html' "
-                            + "style='background:#2E86C1;color:white;"
-                            + "padding:12px 25px;text-decoration:none;"
-                            + "border-radius:6px;font-weight:bold;'>"
-                            + "View & Apply"
-                            + "</a>"
-                            + "</div>"
-
-                            + "<br><br>"
-                            + "<small>Placement Cell<br>RGIT</small>"
-
-                            + "</div>"
-                            + "</div>";
-
-            helper.setText(htmlContent, true);
-
-            // Load logo from uploads folder
-            if (logoFile != null && logoFile.startsWith("http")) {
-                try {
-                    org.springframework.web.client.RestTemplate rt = new org.springframework.web.client.RestTemplate();
-                    byte[] imageBytes = rt.getForObject(logoFile, byte[].class);
-                    helper.addInline("companyLogo",
-                            new org.springframework.core.io.ByteArrayResource(imageBytes),
-                            "image/png");
-                } catch (Exception ignored) {}
-            }
-            mailSender.send(message);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    @Async
+    public void sendNewJobNotification(String toEmail, String name, String companyName,
+            String jobTitle, String category, String salary, Double cgpa,
+            String year, String branch, String skills, String description, String logoFile) {
+        String html =
+            "<div style='font-family:Arial;padding:20px;'>"
+            + "<h2 style='color:#2E86C1;'>New Job Opportunity 🚀</h2>"
+            + "<p>Hi <b>" + name + "</b>,</p>"
+            + "<p>A new job has been posted on <b>NaukariSathi</b>.</p>"
+            + "<h3>📌 Job Details</h3>"
+            + "<p><b>Company:</b> " + companyName + "</p>"
+            + "<p><b>Position:</b> " + jobTitle + "</p>"
+            + "<p><b>Category:</b> " + category + "</p>"
+            + "<p><b>Salary:</b> " + salary + "</p>"
+            + "<h3>🎯 Eligibility</h3>"
+            + "<p><b>Min CGPA:</b> " + cgpa + "</p>"
+            + "<p><b>Year:</b> " + year + "</p>"
+            + "<p><b>Branch:</b> " + branch + "</p>"
+            + "<p><b>Skills:</b> " + skills + "</p>"
+            + "<h3>📝 Description</h3>"
+            + "<p>" + description + "</p>"
+            + "<small>Placement Cell - RGIT</small>"
+            + "</div>";
+        sendEmail(toEmail, name, "🚀 New Job at " + companyName + " - " + jobTitle, html);
     }
 
     @Async
     public void sendAccountDeletionMail(String toEmail, String name, String staffId) {
-
-        try {
-
-            MimeMessage message = mailSender.createMimeMessage();
-
-            MimeMessageHelper helper =
-                    new MimeMessageHelper(message, true, "UTF-8");
-
-            helper.setTo(toEmail);
-            helper.setSubject("Account Removed - NaukariSathi -Student Placement Portal");
-            helper.setFrom("aea802001@smtp-brevo.com");
-
-            String htmlContent =
-                    "<div style='font-family:Arial;padding:20px;'>"
-                            + "<h2>Account Removal Notification</h2>"
-                            + "<p>Hi <b>" + name + "</b>,</p>"
-                            + "<p>Your account on the <b>Campus Placement Portal</b> "
-                            + "has been removed by admin <b>" + staffId + "</b>.</p>"
-                            + "<p>If you believe this was done by mistake, "
-                            + "please contact the placement office.</p>"
-                            + "<br>"
-                            + "<small>Placement Cell<br>RGIT</small>"
-                            + "</div>";
-
-            helper.setText(htmlContent, true);
-
-            mailSender.send(message);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        String html =
+            "<div style='font-family:Arial;padding:20px;'>"
+            + "<h2>Account Removal Notification</h2>"
+            + "<p>Hi <b>" + name + "</b>,</p>"
+            + "<p>Your account has been removed by admin <b>" + staffId + "</b>.</p>"
+            + "<p>If this was a mistake, contact the placement office.</p>"
+            + "<small>Placement Cell - RGIT</small>"
+            + "</div>";
+        sendEmail(toEmail, name, "Account Removed - NaukariSathi", html);
     }
 
     @Async
-    public void sendApplicationAcceptedMail(String email,String name){
-
-        try{
-
-            MimeMessage message = mailSender.createMimeMessage();
-
-            MimeMessageHelper helper =
-                    new MimeMessageHelper(message,true);
-
-            helper.setTo(email);
-            helper.setSubject("Congratulations 🎉 Job Application Accepted");
-            helper.setFrom("aea802001@smtp-brevo.com");
-
-            String html =
-                    "<h2>Congratulations "+name+" 🎉</h2>"+
-                            "<p>Your application has been <b>ACCEPTED</b>.</p>"+
-                            "<p>The company will contact you soon.</p>";
-
-            helper.setText(html,true);
-
-            mailSender.send(message);
-
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-
+    public void sendApplicationAcceptedMail(String email, String name) {
+        String html =
+            "<h2>Congratulations " + name + " 🎉</h2>"
+            + "<p>Your application has been <b>ACCEPTED</b>.</p>"
+            + "<p>The company will contact you soon.</p>";
+        sendEmail(email, name, "Congratulations 🎉 Job Application Accepted", html);
     }
 
     @Async
-    public void sendApplicationRejectedMail(String email,String name){
-
-        try{
-
-            MimeMessage message = mailSender.createMimeMessage();
-
-            MimeMessageHelper helper =
-                    new MimeMessageHelper(message,true);
-
-            helper.setTo(email);
-            helper.setSubject("Job Application Update");
-            helper.setFrom("aea802001@smtp-brevo.com");
-
-            String html =
-                    "<h3>Hello "+name+"</h3>"+
-                            "<p>We regret to inform you that your application was not selected.</p>"+
-                            "<p>Don't worry! Keep applying for other opportunities.</p>";
-
-            helper.setText(html,true);
-
-            mailSender.send(message);
-
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-
+    public void sendApplicationRejectedMail(String email, String name) {
+        String html =
+            "<h3>Hello " + name + "</h3>"
+            + "<p>We regret to inform you that your application was not selected.</p>"
+            + "<p>Don't worry! Keep applying for other opportunities.</p>";
+        sendEmail(email, name, "Job Application Update", html);
     }
 }
