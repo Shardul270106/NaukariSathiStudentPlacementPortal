@@ -20,6 +20,7 @@ public class EmailService {
 
     private void sendEmail(String toEmail, String toName, String subject, String htmlContent) {
         try {
+            System.out.println("Sending email to: " + toEmail + " via Brevo API");
             RestTemplate restTemplate = new RestTemplate();
 
             HttpHeaders headers = new HttpHeaders();
