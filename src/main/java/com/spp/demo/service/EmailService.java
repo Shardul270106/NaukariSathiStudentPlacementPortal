@@ -26,7 +26,7 @@ public class EmailService {
 
             helper.setTo(toEmail);
             helper.setSubject("OTP Verification - NaukariSathi -Student Placement Portal 🔐");
-            helper.setFrom("placements@yourcollege.edu");
+            helper.setFrom("studentplacementportal@gmail.com");
 
             String htmlContent =
                     "<div style='font-family:Arial;text-align:center;padding:20px;'>"
@@ -60,7 +60,7 @@ public class EmailService {
 
             helper.setTo(toEmail);
             helper.setSubject("Welcome to NaukariSathi -Student Placement Portal 🎓");
-            helper.setFrom("placements@yourcollege.edu");
+            helper.setFrom("studentplacementportal@gmail.com");
 
             String htmlContent =
                     "<div style='font-family:Arial; text-align:center; padding:20px;'>"
@@ -122,7 +122,7 @@ public class EmailService {
 
             helper.setTo(toEmail);
             helper.setSubject("🚀 New Job at " + companyName + " - " + jobTitle);
-            helper.setFrom("placements@yourcollege.edu");
+            helper.setFrom("studentplacementportal@gmail.com");
 
             String htmlContent =
                     "<div style='font-family:Arial;background:#f4f6f8;padding:20px;'>"
@@ -208,7 +208,7 @@ public class EmailService {
 
             helper.setTo(toEmail);
             helper.setSubject("Account Removed - NaukariSathi -Student Placement Portal");
-            helper.setFrom("placements@yourcollege.edu");
+            helper.setFrom("studentplacementportal@gmail.com");
 
             String htmlContent =
                     "<div style='font-family:Arial;padding:20px;'>"
@@ -243,7 +243,7 @@ public class EmailService {
 
             helper.setTo(email);
             helper.setSubject("Congratulations 🎉 Job Application Accepted");
-            helper.setFrom("placements@yourcollege.edu");
+            helper.setFrom("studentplacementportal@gmail.com");
 
             String html =
                     "<h2>Congratulations "+name+" 🎉</h2>"+
@@ -272,6 +272,7 @@ public class EmailService {
 
             helper.setTo(email);
             helper.setSubject("Job Application Update");
+            helper.setFrom("studentplacementportal@gmail.com");
 
             String html =
                     "<h3>Hello "+name+"</h3>"+
