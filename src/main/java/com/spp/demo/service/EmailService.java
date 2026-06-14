@@ -26,8 +26,7 @@ public class EmailService {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.set("api-key", brevoApiKey);
-            System.out.println("Brevo status: " + response.getStatusCode()); // ADD
-System.out.println("Brevo body: " + response.getBody());  
+
 
             Map<String, Object> body = Map.of(
                 "sender", Map.of("name", FROM_NAME, "email", FROM_EMAIL),
@@ -38,6 +37,10 @@ System.out.println("Brevo body: " + response.getBody());
 
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
             restTemplate.postForEntity(BREVO_URL, request, String.class);
+            ResponseEntity<String> response = restTemplate.postForEntity(BREVO_URL, request, String.class);
+        
+        System.out.println("Brevo status: " + response.getStatusCode());
+        System.out.println("Brevo body: " + response.getBody());
 
         } catch (Exception e) {
             e.printStackTrace();
