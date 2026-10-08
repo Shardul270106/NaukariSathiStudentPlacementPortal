@@ -29,7 +29,7 @@ public class GeminiService {
             message.put("content", prompt);
 
             Map<String, Object> body = new HashMap<>();
-            body.put("model", "llama-3.3-70b-versatile");
+            body.put("model", "openai/gpt-oss-120b");
             body.put("messages", List.of(message));
             body.put("temperature", 0.1);
             body.put("max_tokens", 2048);
