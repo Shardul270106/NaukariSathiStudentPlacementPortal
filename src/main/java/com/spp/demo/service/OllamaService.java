@@ -11,31 +11,138 @@ public class OllamaService {
     private GeminiService geminiService;
 
     public String parseResume(String resumeText) {
+
+        if (resumeText == null || resumeText.isBlank()) {
+            throw new RuntimeException("No resume text could be extracted from PDF");
+        }
+
         if (resumeText.length() > 8000) {
             resumeText = resumeText.substring(0, 8000);
         }
 
         String prompt = """
-You are an AI resume parser.
+You are a highly reliable AI resume/CV parser.
 
-First determine if the given document is a RESUME or CV.
+Your task is to analyze ONLY the document text provided below.
 
-A valid resume usually contains:
-- personal details (name may appear at the very top without any label)
-- education
-- skills
-- projects or experience
+IMPORTANT:
+This text was extracted from a PDF resume using a PDF text extractor.
+The formatting, font sizes, columns, colors, images, and visual layout may be lost.
+Therefore, DO NOT reject a document simply because the extracted text looks poorly formatted.
 
-IMPORTANT: In modern resume templates (like Canva), the person's name often appears
-at the very TOP of the document as a large heading — with NO label like "Name:".
-It is usually the FIRST line or first prominent text. Extract it as fullName.
+==================================================
+RESUME DETECTION RULES
+==================================================
 
-If the document is NOT a resume, return:
-{ "isResume": false, "reason": "Document is not a resume" }
+Consider the document a RESUME/CV if it contains several indicators such as:
 
-If it IS a resume, return:
+- A person's name
+- Education / college / university
+- Degree / branch / academic qualification
+- Skills
+- Projects
+- Work experience / internship
+- Career objective / summary
+- Contact information
+- CGPA / percentage / graduation year
+- Certifications
+- Achievements
+- Technical skills
+
+A resume does NOT need to contain every field.
+
+Even if only some of these sections are present, it can still be a valid resume.
+
+DO NOT mark the document as non-resume because:
+- some fields are missing
+- address is missing
+- experience is missing
+- projects are missing
+- CGPA is missing
+- semester is missing
+- the name has no "Name:" label
+- the extracted text has unusual spacing
+- the PDF was created using Canva or another design tool
+- the resume uses columns
+- the extracted text order is imperfect
+
+If the document clearly contains personal/academic/professional information belonging to a candidate, treat it as a RESUME.
+
+Only return isResume=false when the document is clearly NOT a resume, such as:
+- a textbook
+- an academic question paper
+- an invoice
+- a receipt
+- a random article
+- a restaurant menu
+- a blank document
+- unrelated notes
+- a completely unrelated document
+
+==================================================
+FULL NAME EXTRACTION
+==================================================
+
+The candidate's name may appear:
+
+- as the first line
+- as a large heading
+- without any label
+- before contact information
+- inside a Canva-style template
+
+Extract the candidate's actual name into "fullName".
+
+Do NOT use section headings such as:
+- RESUME
+- CV
+- CURRICULUM VITAE
+- EDUCATION
+- SKILLS
+- PROJECTS
+- EXPERIENCE
+- PROFILE
+
+as the person's name.
+
+If the name cannot be confidently identified, return an empty string.
+
+==================================================
+DATA EXTRACTION RULES
+==================================================
+
+Extract information ONLY from the provided document.
+
+NEVER invent information.
+
+If a field is not present, return an empty string or empty array.
+
+Preserve the actual information from the document.
+
+Return:
+- skills as an array
+- education as an array
+- experience as an array
+- projects as an array
+
+==================================================
+OUTPUT FORMAT
+==================================================
+
+Return ONLY ONE VALID JSON OBJECT.
+
+Do NOT return:
+- markdown
+- ```json
+- explanations
+- comments
+- additional text
+
+For a valid resume use EXACTLY this structure:
+
 {
   "isResume": true,
+  "reason": "",
   "fullName": "",
   "address": "",
   "collegeName": "",
@@ -51,13 +158,30 @@ If it IS a resume, return:
   "projects": []
 }
 
-Rules:
-- Return ONLY valid JSON, no explanation, no markdown, no code fences
-- fullName must be the candidate's real full name (first + last), not a section heading
-- If a field is missing return ""
-- skills, education, experience, projects must be arrays
+For a non-resume use:
 
-Resume Text:
+{
+  "isResume": false,
+  "reason": "Document is not a resume",
+  "fullName": "",
+  "address": "",
+  "collegeName": "",
+  "branch": "",
+  "year": "",
+  "semester": "",
+  "cgpa": "",
+  "preferredField": "",
+  "summary": "",
+  "skills": [],
+  "education": [],
+  "experience": [],
+  "projects": []
+}
+
+==================================================
+DOCUMENT TEXT
+==================================================
+
 """ + resumeText;
 
         return geminiService.generate(prompt);
